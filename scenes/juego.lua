@@ -11,15 +11,30 @@ function Main()
     self.cam_x = 0
     local cam_y = 0
     
+    local boton_atacar = nil
+    local boton_diplom = nil
+    local boton_go_back = nil
+    
+    local tip_text = nil
+    
     function self.load(settings)
-        
+        -- gui_boton_opcion.png
         local i = 0
-        aldea_list[0] = BotonIma(love.graphics.newImage("/rcs/img/aldea_icon_template.png"),250,200,500,500)
-        aldea_list[1] = BotonIma(love.graphics.newImage("/rcs/img/aldea_icon_template_2.png"),500,700,500,500)
-        aldea_list[2] = BotonIma(love.graphics.newImage("/rcs/img/aldea_icon_template_3.png"),1920/2,600,500,500)
+        aldea_list[0] = BotonAldea(love.graphics.newImage("/rcs/img/aldea_icon_template.png"),250,200,500,500)
+        aldea_list[1] = BotonAldea(love.graphics.newImage("/rcs/img/aldea_icon_template_2.png"),500,700,500,500)
+        aldea_list[2] = BotonAldea(love.graphics.newImage("/rcs/img/aldea_icon_template_3.png"),1920/2,600,500,500)
         
         back_ground = love.graphics.newImage("/rcs/img/top_view.jpg")
         
+        local boton_bg =  love.graphics.newImage("/rcs/img/gui_boton_opcion.png")
+        boton_atacar =  Boton('Es hora de que\nMurais', 1920*1.75,1080*0.3,0,0,boton_bg)
+        boton_diplom =  Boton('Hablemos como\ngente civilizada', 1920*1.75,1080*0.5,0,0,boton_bg)
+        boton_go_back = Boton('Olvidalo\nmejor luego', 1920*1.75,1080*0.7,0,0,boton_bg)
+    end
+    
+    function self.goToDiplomMini()
+        local sim_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+        SCENA_MANAGER.replace(sim_scene,{FILENAME})
     end
     
     function self.draw()
@@ -38,8 +53,41 @@ function Main()
         love.graphics.print('Escoge una aldea para hacer algo...')
         if state == 2 then
             love.graphics.setColor(0,0,0)
-            love.graphics.print('¿Qué quieres hacer?',1920*1.5,400)
+            love.graphics.print('¿Qué quieres hacer?',1920*1.6,150)
             love.graphics.setColor(1,1,1)
+            
+                        
+            boton_atacar.setPointerPos(globalX, globalY)
+            boton_atacar.draw()
+            
+            boton_diplom.setPointerPos(globalX, globalY)
+            boton_diplom.draw()
+            
+            boton_go_back.setPointerPos(globalX, globalY)
+            boton_go_back.draw()
+            
+            local show_tip = false
+                    
+            if boton_go_back.isPointerInside() then
+                tip_text = 'REGRESEMOS'
+                show_tip = true
+            end
+            if boton_diplom.isPointerInside() then
+                tip_text = 'Opcion diplomatica'
+                show_tip = true
+            end
+            if boton_atacar.isPointerInside() then
+                tip_text = 'Atacar, no programado aún\n¡sorry!'
+                show_tip = true
+            end
+            
+            if show_tip then
+                love.graphics.setColor(1,0,1)
+                love.graphics.print(tip_text,1920*1.5,850)
+                love.graphics.setColor(0,0,0)
+                love.graphics.print(tip_text,1920*1.5-2,850)
+            end
+
         end
         --love.graphics.scale(2,2)
 
@@ -63,10 +111,13 @@ function Main()
         
         
         love.graphics.pop()
+        
+        
+        
     end
     
     function self.update(dt)
-    if working_id >= 0  then
+        if working_id >= 0  then
             if state == 1 then
                 if aldea_list[working_id].isMoveEnd() then
                     state = 2
@@ -97,9 +148,15 @@ function Main()
                 end
             end
             if state == 2 then
-                aldea_list[working_id].goBack()
-                flux.to(self,1,{cam_x = 0})
-                state = 3
+                if boton_go_back.isPointerInside() then
+                    aldea_list[working_id].goBack()
+                    flux.to(self,1,{cam_x = 0})
+                    state = 3
+                end
+                if boton_diplom.isPointerInside() then
+                    self.goToDiplomMini()
+                end
+                --boton_atacar.isPointerInside()
             end
         end
     end

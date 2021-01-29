@@ -1,5 +1,5 @@
 
-function Boton(text,x,y,w,h)
+function Boton(text,x,y,w,h,bg_ima)
     local self = {}
     self.pos = {}
     self.pos.x = x
@@ -7,11 +7,15 @@ function Boton(text,x,y,w,h)
     self.text = text
     local iw = w or 0
     local ih = h or 0
+    if bg_ima then
+        iw = bg_ima:getWidth()
+        ih = bg_ima:getHeight()
+    end
     self.w = math.max(love.graphics.getFont():getWidth( text )+40,iw)
     self.h = math.max(love.graphics.getFont():getHeight( text )+20,ih)
     self.mw = math.floor(self.w/2)
     self.mh = math.floor(self.h/2)
-    self.rgba_text = {0.25,0.25,0.25}
+    self.rgba_text = {0.1,0.1,0.1}
     self.rgba = {0.8,0.6,0.7,1}
     
     local px = 0
@@ -54,8 +58,17 @@ function Boton(text,x,y,w,h)
         love.graphics.setColor(0,0,0,1)
         love.graphics.printf(self.text,self.pos.x-self.mw+2,self.pos.y-self.mh+10+4+4,self.w,'center')
         
-        love.graphics.setColor(self.rgba[1],self.rgba[2],self.rgba[3],self.rgba[4])
-        love.graphics.rectangle('fill',self.pos.x-self.mw,self.pos.y-self.mh,self.w,self.h,15,15,8)
+        if not bg_ima then
+            love.graphics.setColor(self.rgba[1],self.rgba[2],self.rgba[3],self.rgba[4])
+            love.graphics.rectangle('fill',self.pos.x-self.mw,self.pos.y-self.mh,self.w,self.h,15,15,8)
+        else
+            love.graphics.setColor(0.8,0.8,0.8)
+            if self.isPointerInside() then 
+                love.graphics.setColor(1,1,1)
+            end
+            love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
+        end
+        
         love.graphics.setColor(rgb_a_text[1],rgb_a_text[2],rgb_a_text[3],rgb_a_text[4])
         love.graphics.printf(self.text,self.pos.x-self.mw,self.pos.y-self.mh+10+mdy,self.w,'center')
 
@@ -65,7 +78,8 @@ function Boton(text,x,y,w,h)
 end
 
 
-function BotonIma(ima,x,y,w,h,offset)
+
+function BotonAldea(ima,x,y,w,h,offset)
     local self = Boton('',x,y,w,h)
     self.ima = ima
     self.pos.z = 1
