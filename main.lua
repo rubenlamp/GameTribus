@@ -247,14 +247,9 @@ function love.load()
     --CURSOR = Cursor()
     
    -- NORMAL_SHADER = love.graphics.newShader("rcs/shaders/normal_maping.glsl") 
-    local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
-   --local init_scene =  love.filesystem.load("scenes/endign.lua")()
-    --local init_scene =  love.filesystem.load("scenes/area_sim.lua")()
-   --local init_scene =  love.filesystem.load("scenes/tutorial_1.lua")()
-    --local init_scene =  love.filesystem.load("scenes/creditos.lua")()
-    --local init_scene =  love.filesystem.load("scenes/central_hub.lua")()
-    --local init_scene =  love.filesystem.load("scenes/tale01.lua")()
-    SCENA_MANAGER.push(init_scene,{'mask'})
+   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+   SCENA_MANAGER.push(init_scene,{'mask'})
     --SCENA_MANAGER.push(init_scene,{'tutorial/palenque'})
 end
 

@@ -15,8 +15,13 @@ function Boton(text,x,y,w,h,bg_ima)
     self.h = math.max(love.graphics.getFont():getHeight( text )+20,ih)
     self.mw = math.floor(self.w/2)
     self.mh = math.floor(self.h/2)
+    
     self.rgba_text = {0.1,0.1,0.1}
     self.rgba = {0.8,0.6,0.7,1}
+    
+    self.rgba_hover = nil
+    self.rgba_text_hover = nil
+    
     
     local px = 0
     local py = 0
@@ -36,7 +41,12 @@ function Boton(text,x,y,w,h,bg_ima)
     end
     
     function self.draw()
-        self.rgba[4] = 0.8
+        local rgb_a_bg = {
+            self.rgba[1],
+            self.rgba[2],
+            self.rgba[3],
+            self.rgba[4]
+            }
         local rgb_a_text = {
             self.rgba_text[1],
             self.rgba_text[2],
@@ -46,20 +56,30 @@ function Boton(text,x,y,w,h,bg_ima)
         local mdy = 0
         if self.isPointerInside() then
             self.rgba[4] = 0.9
-            rgb_a_text[1] = math.min(self.rgba_text[1]+0.5)
-            rgb_a_text[2] = math.min(self.rgba_text[2]+0.5)
-            rgb_a_text[3] = math.min(self.rgba_text[3]+0.5)
-            mdx=-2
-            mdy=-2
-            love.graphics.setColor(0,0,0,0.75)
-            love.graphics.rectangle('line',self.pos.x-self.mw-1,self.pos.y-self.mh-1,self.w+1,self.h+1,15,15,8)
+            if not self.rgba_text_hover then
+                rgb_a_text[1] = math.min(self.rgba_text[1]+0.5)
+                rgb_a_text[2] = math.min(self.rgba_text[2]+0.5)
+                rgb_a_text[3] = math.min(self.rgba_text[3]+0.5)
+            else
+                rgb_a_text[1] = self.rgba_text_hover[1]
+                rgb_a_text[2] = self.rgba_text_hover[2]
+                rgb_a_text[3] = self.rgba_text_hover[3]
+                rgb_a_text[4] = self.rgba_text_hover[4]
+            end
+            if self.rgba_hover then
+                rgb_a_bg[1] = self.rgba_hover[1]
+                rgb_a_bg[2] = self.rgba_hover[2]
+                rgb_a_bg[3] = self.rgba_hover[3]
+                rgb_a_bg[4] = self.rgba_hover[4]
+            end
         end
+        
         love.graphics.setFont(love.graphics.getFont())
         love.graphics.setColor(0,0,0,1)
         love.graphics.printf(self.text,self.pos.x-self.mw+2,self.pos.y-self.mh+10+4+4,self.w,'center')
         
         if not bg_ima then
-            love.graphics.setColor(self.rgba[1],self.rgba[2],self.rgba[3],self.rgba[4])
+            love.graphics.setColor(rgb_a_bg[1],rgb_a_bg[2],rgb_a_bg[3],rgb_a_bg[4])
             love.graphics.rectangle('fill',self.pos.x-self.mw,self.pos.y-self.mh,self.w,self.h,15,15,8)
         else
             love.graphics.setColor(0.8,0.8,0.8)
