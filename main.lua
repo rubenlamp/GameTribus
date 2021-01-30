@@ -73,6 +73,7 @@ TRIBU_2 = 0
 TRIBU_3 = 0
 TRIBU_4 = 0
 
+GAUSIAN_BLURS = nil
 
 function TitleBehaviour(char_dpl,font)
     --set the start values
@@ -96,8 +97,6 @@ function TitleBehaviour(char_dpl,font)
         ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
         ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
     end
-    
-    
     
    char_dpl.wait = function()
         --print('call next')
@@ -246,10 +245,35 @@ function love.load()
 
     --CURSOR = Cursor()
     
-   -- NORMAL_SHADER = love.graphics.newShader("rcs/shaders/normal_maping.glsl") 
-   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
-   local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()
-   SCENA_MANAGER.push(init_scene,{'mask'})
+   GAUSIAN_BLURS = love.graphics.newShader[[
+	// This is a reimplementation of some code I found in shadertoy   
+	float Pi = 6.28318530718; // Pi*2
+	extern float Size = 2.0; // BLUR SIZE (Radius)
+	
+    vec4 effect(vec4 color, Image tex, vec2 uv, vec2 screen_coords){
+		float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+		float Quality = 4.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
+		
+		vec2 Radius = vec2(Size/1920.0f,Size/1080.0f);
+		
+		vec4 texturecolor = Texel(tex, uv);
+		
+		for( float d=0.0; d<Pi; d+=Pi/Directions)
+		{
+			for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
+			{
+				texturecolor += Texel(tex, uv+vec2(cos(d),sin(d))*Radius*i);		
+			}
+		}
+		
+		texturecolor /= Quality * Directions - 15.0;
+		return texturecolor*color;
+	}
+  
+  ]]
+   local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   --local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+   SCENA_MANAGER.push(init_scene)
     --SCENA_MANAGER.push(init_scene,{'tutorial/palenque'})
 end
 

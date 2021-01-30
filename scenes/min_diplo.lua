@@ -234,7 +234,7 @@ function BotonDrawAndDrop(text,x,y,w,h)
     function self.returnToPos()
         --self.pos.x = self.original_pos_x
         --self.pos.y = self.original_pos_y
-        flux.to(self.pos,0.25,{x=self.original_pos_x,y=self.original_pos_y})
+        flux.to(self.pos,0.25,{x=self.original_pos_x,y=self.original_pos_y}):ease("expoout")
     end
     
     self.rgba_text = {1,1,1,1}
@@ -300,14 +300,14 @@ function Cuadricula(x,y,cw,ch,magico,suma)
         end
     end
     
-    function self.putValueOnPlace(px,py,value, place)
+    function self.putValueOnPlace(px,py,value, button_index)
         local x = math.floor((px-rx)/cw)
         local y = math.floor((py-ry)/ch)
-        print('put value on...', x,y)
+        --print('put value on...', x,y)
         if x >= 0 and x < 4  and y >= 0 and y < 4 then
             local index = (x + ( y * 4)+1)
             magico[index] = value
-            lista_huecos[index] = place
+            lista_huecos[index] = button_index
         end
     end
     
@@ -332,13 +332,30 @@ function Cuadricula(x,y,cw,ch,magico,suma)
         return nil
     end
     
+    function self.isCompletado()
+        return (testMagicBit(magico,suma) == 255)
+    end
+    
+    function self.drawStandBy()
+        love.graphics.setColor(0,0,0,0.5)
+        love.graphics.rectangle('fill',rx,ry,rw,rh,35,35,8)
+        
+        local i = 0
+        while i < 4 do
+            love.graphics.printf('*', rx+rw, ry+ch*i+ch*0.2,cw,'center')
+            love.graphics.printf('*', rx-cw, ry+ch*i+ch*0.2,cw,'center')
+            love.graphics.printf('*', rx+cw*i, ry+rh+ch*0.2,cw,'center')
+            i=i+1
+        end
+    end
+    
     function self.draw()
         love.graphics.setColor(0,0,0,0.5)
-        love.graphics.rectangle('fill',rx,ry,rw,rh)
+        love.graphics.rectangle('fill',rx,ry,rw,rh,35,35,8)
         love.graphics.setColor(1,1,1,1)
         local x = math.floor(mx/cw)
         local y = math.floor(my/ch)
-        love.graphics.print('Deben sumar '..tostring(suma))
+        love.graphics.printf('Deben sumar '..tostring(suma),0,0,1920,'center')
         local bitsum = testMagicBit(magico,suma)
         -- filas horizontales
         
@@ -368,19 +385,34 @@ function Cuadricula(x,y,cw,ch,magico,suma)
                 ms_str = tostring(magico[i])
             else
                 love.graphics.setColor(0,0,0,0.5)
-                love.graphics.rectangle('fill',rx+cw*x, ry+ch*y,cw,ch,15,15,8)
+                love.graphics.rectangle('fill',rx+cw*x, ry+ch*y,cw,ch,35,35,8)
             end
             love.graphics.setColor(1,1,1,1)
-            love.graphics.print(ms_str, rx+cw*x, ry+ch*y)
+            love.graphics.printf(ms_str, rx+cw*x, ry+ch*y+ch*0.2,cw,'center')
             sum = sum+magico[i]
             count = count+1
             if count == 4 then
-                love.graphics.print(tostring(sum), rx+rw, ry+ch*y)
+                love.graphics.setColor(1,0,0,1)
+                if sum == suma then
+                    love.graphics.setColor(1,1,0,1)
+                end
+                love.graphics.printf(tostring(sum), rx+rw, ry+ch*y+ch*0.2,cw,'center')
+                love.graphics.printf(tostring(sum), rx-cw, ry+ch*y+ch*0.2,cw,'center')
                 sum = 0
                 count = 0
             end
             i=i+1
-            
+        end
+        
+        i = 0
+        while i < 4 do
+            local sum = magico[13+i]+magico[9+i]+magico[5+i]+magico[1+i]
+            love.graphics.setColor(1,0,0,1)
+            if sum == suma then
+                love.graphics.setColor(1,1,0,1)
+            end
+            love.graphics.printf(tostring(sum), rx+cw*i, ry+rh+ch*0.2,cw,'center')
+            i=i+1
         end
     end
     
@@ -454,11 +486,45 @@ local function ponHuecos(mc)
 end
 
 
+function MuestraTiempo(tiempo)
+    local self = {}
+    
+    self.x = (1920/2)- 400
+    self.y = 1080*0.08
+    
+    self.w = 800
+    self.h = 30
+    
+    self.sub_w = 800
+    
+    local tween = nil
+    
+    function self.start()
+        tween = flux.to(self,tiempo,{sub_w=0}):ease("sineout")
+    end
+    
+    function self.stop()
+        tween:stop()
+    end
+    
+    function self.draw()
+        love.graphics.setColor(0,1,1,1)
+        if self.sub_w > 5 then
+            love.graphics.rectangle('fill',self.x+1,self.y+1,self.sub_w-2,self.h-2,9,9,5)
+        end
+        love.graphics.setColor(0,0,0,1)
+        love.graphics.rectangle('line',self.x,self.y,self.w,self.h,10,10,5)
+    end
+    
+    return self
+end
+
 function Main()
     local self = Escena()
     local screen_ima = nil  
     
     local newbutton = nil
+    local go_back_button = nil
     local cuadrado = nil
     
     local botones_huecos = {}
@@ -466,82 +532,143 @@ function Main()
     local last_active_x = 0
     local last_active_y = 0
     
+    local mtiempo = nil
     
-    function loadNewGame()
+    self.size = 64
+    
+    local STATE = 0 -- No gastarted 
+    
+    local function goToHub()
         local sim_scene =  love.filesystem.load("scenes/juego.lua")()
         SCENA_MANAGER.replace(sim_scene,{FILENAME})
     end
+    
+    local function irAIniciarElJuego()
+        flux.to(self,0.5,{size=0}):ease("expoout"):oncomplete(mtiempo.start)
+        STATE = 1
+    end
 
     function self.load(settings)
-        newbutton = Boton("No hay juego aquí :'(",1920/2,1080*0.9,
-                love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
-            
+        newbutton = Boton("¿Estas Listo?",1920/2,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
+        go_back_button = Boton("Regresemos",1920/2,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
         
         local magico, sum = magicCuadro()
         --cambial al azar dos numero
         --testMagicPrint(magico, sum)
         magico, huecos = ponHuecos(magico)
         
-        cuadrado = Cuadricula(1920/2,1080*0.3,150,150, magico, sum)
+        local size_cube = 120
+        cuadrado = Cuadricula(1920/2,1080*0.35,size_cube,size_cube, magico, sum)
         
         local i = 1
         local spacing = 40
-        local x = 1920/2 - (150+spacing)*(#huecos/2.0) + 150*0.5
+        local x = 1920/2 - (size_cube+spacing)*(#huecos/2.0) + size_cube*0.25
         while huecos[i] do
-            botones_huecos[i] = BotonDrawAndDrop(tostring(huecos[i]),x,1080*0.7,150,150)
+            botones_huecos[i] = BotonDrawAndDrop(tostring(huecos[i]),x,1080*0.75,size_cube,size_cube)
             x = x+(spacing+150)
             i=i+1
         end
-        --[[
-        creditbutton = Boton('Creditos',1920/2,1080*0.5,
-                love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
         
-            
-        exitbutton = Boton('Salir',1920/2,1080*0.7,
-                love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
-        --]]
+        mtiempo = MuestraTiempo(25) -- 45 segundos
+    end
+    
+    function self.update(dt)
+        if cuadrado.isCompletado() then
+            -- paren todo, ganamos!!!
+        end
+        if mtiempo.sub_w <= 0 then
+            -- perdimos :'(
+        end
     end
     
     function self.draw()
        
         love.graphics.clear(0.6,0.6,0.6)
         love.graphics.setColor(1,1,1)
-        
-        local zoom = 1
+
         love.graphics.push()
-        --love.graphics.scale(2,2)
-        love.graphics.setColor(1,1,1)
-        
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
-
-        love.graphics.setColor(1,1,1)
         
-        cuadrado.setMousePos(globalX, globalY)
-        cuadrado.draw()
         
-        newbutton.setPointerPos(globalX, globalY)
-        newbutton.draw()
         
-        local i = 1
-        while huecos[i] do
-            botones_huecos[i].setPointerPos(globalX, globalY)
-            botones_huecos[i].draw()
-            i=i+1
-        end
-        
+            love.graphics.setShader(GAUSIAN_BLURS)
+            love.graphics.setColor(1,1,1)
+            mtiempo.draw()
+            
+            love.graphics.setColor(1,1,1)
+            
+            cuadrado.setMousePos(globalX, globalY)
+            cuadrado.draw()
+            
+            local i = 1
+            while huecos[i] do
+                botones_huecos[i].setPointerPos(globalX, globalY)
+                if STATE > 1 then
+                    if botones_huecos[i].pos.y ~= botones_huecos[i].original_pos_y then
+                        botones_huecos[i].draw()
+                    end
+                else
+                    botones_huecos[i].draw()
+                end
+                i=i+1
+            end
+            
+            love.graphics.setShader()
+            
+            if STATE == 0 then
+                --love.graphics.setShader(GAUSIAN_BLURS)
+                --cuadrado.drawStandBy()
+                --love.graphics.setShader()
+                newbutton.setPointerPos(globalX, globalY)
+                newbutton.draw()
+            end
+            
+            love.graphics.setColor(0,0,0)
+            if STATE == 3 then
+                love.graphics.printf('Esas clases de retorica te estafaron.\n~ FRACASO ~ ',0,1080*0.65,1920,'center')
+                go_back_button.setPointerPos(globalX, globalY)
+                go_back_button.draw()
+            end
+            if STATE == 4 then
+                love.graphics.printf('¡Toma Notas Churchill!\n~ EXITO ~',0,1080*0.65,1920,'center')
+                go_back_button.setPointerPos(globalX, globalY)
+                go_back_button.draw()
+            end
+            
         love.graphics.pop()
     end
     
     function self.update(dt)
-
+        if self.size > 0 then
+            GAUSIAN_BLURS:send("Size", math.floor(self.size) )
+        end
+        if cuadrado.isCompletado() and STATE == 1 then
+            mtiempo.stop()
+            STATE = 4
+        end
+        if mtiempo.sub_w <= 3 and STATE == 1 then
+            STATE = 3
+            flux.to(self,2,{size=8}):ease("expoin")
+            print('Perdiste')
+        end
+        
     end
     
     function self.mousepressed(x, y, button)
-        if newbutton.isPointerInside() then
-            loadNewGame()
+        if newbutton.isPointerInside() and STATE == 0 then
+            --loadNewGame()
+            irAIniciarElJuego()
         end
-        if button == 1 then
+        if STATE == 3 or STATE == 4 then
+            if go_back_button.isPointerInside() then
+                goToHub()
+            end
+        end
+        
+        if STATE == 1 then
             cuadrado.clearPlace()
             local i = 1
             while botones_huecos[i] do
@@ -581,27 +708,28 @@ function Main()
     end
 
     function self.mousereleased(x, y, buttom)
-        if botones_huecos[active_hueco] then
-            --check the index on the cuadro
-            
-            local nx, ny, last = cuadrado.canPutInPlace(tonumber(botones_huecos[active_hueco].text), active_hueco)
-            print(nx,ny,last)
-            if nx ~= nil then
-                --botones_huecos[active_hueco].pos.x = nx
-                --botones_huecos[active_hueco].pos.y = ny
-                flux.to(botones_huecos[active_hueco].pos,0.25,{x=nx,y=ny})
-                -- paso un intercambio dentro del cuadrado
-                if last and last > 0 then -- no hay un numero en en lugar? 
-                    print('try to enter change from ', active_hueco, ' to ', last)
-                    --botones_huecos[last].pos.x = last_active_x 
-                    --botones_huecos[last].pos.y = last_active_y
-                    flux.to(botones_huecos[last].pos,0.25,{x=last_active_x,y=last_active_y})
-                    cuadrado.putValueOnPlace(last_active_x,last_active_y,tonumber(botones_huecos[last].text), last)
+        if STATE == 1 then
+            if botones_huecos[active_hueco] then
+                --check the index on the cuadro
+                local nx, ny, last = cuadrado.canPutInPlace(tonumber(botones_huecos[active_hueco].text), active_hueco)
+                --print(nx,ny,last)
+                if nx ~= nil then
+                    --botones_huecos[active_hueco].pos.x = nx
+                    --botones_huecos[active_hueco].pos.y = ny
+                    flux.to(botones_huecos[active_hueco].pos,0.25,{x=nx,y=ny}):ease("expoout")
+                    -- paso un intercambio dentro del cuadrado
+                    if last and last > 0 then -- no hay un numero en en lugar? 
+                        --print('try to enter change from ', active_hueco, ' to ', last)
+                        --botones_huecos[last].pos.x = last_active_x 
+                        --botones_huecos[last].pos.y = last_active_y
+                        flux.to(botones_huecos[last].pos,0.25,{x=last_active_x,y=last_active_y}):ease("expoout")
+                        cuadrado.putValueOnPlace(last_active_x,last_active_y,tonumber(botones_huecos[last].text), last)
+                    end
+                else
+                    botones_huecos[active_hueco].returnToPos()
                 end
-            else
-                botones_huecos[active_hueco].returnToPos()
+                active_hueco = -1
             end
-            active_hueco = -1
         end
     end
 
