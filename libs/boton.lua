@@ -15,31 +15,31 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
     self.h = math.max(love.graphics.getFont():getHeight( text )+20,ih)
     self.mw = math.floor(self.w/2)
     self.mh = math.floor(self.h/2)
-    
+
     self.rgba_text = {0.9,0.9,0.9,1}
     self.rgba = {0.1,0.1,0.1,0.8}
-    
+
     self.rgba_hover = {0.15,0.15,0.15,0.9}
     self.rgba_text_hover = nil
-    
-    
+
+
     local px = 0
     local py = 0
-    
+
     function self.setPointerPos(x,y)
         px = x
         py = y
     end
-    
+
     function self.isPointerInside()
         if px < self.pos.x+(self.w-self.mw) and py < self.pos.y+(self.h-self.mh) then
             if px > self.pos.x-self.mw and py > self.pos.y-self.mh then
                return true
             end
         end
-        return false 
+        return false
     end
-    
+
     function self.draw()
         local rgb_a_bg = {
             self.rgba[1],
@@ -72,9 +72,9 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
                 rgb_a_bg[4] = self.rgba_hover[4]
             end
         end
-        
+
         love.graphics.setFont(love.graphics.getFont())
-        
+
         if not bg_ima then
             love.graphics.setColor(rgb_a_bg[1],rgb_a_bg[2],rgb_a_bg[3],rgb_a_bg[4])
             love.graphics.rectangle('fill',self.pos.x-self.mw,self.pos.y-self.mh,self.w,self.h,15,15,8)
@@ -82,7 +82,7 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
             local inside = self.isPointerInside()
             if not bg_ima_hover then
                 love.graphics.setColor(0.8,0.8,0.8)
-                if inside then 
+                if inside then
                     love.graphics.setColor(1,1,1)
                 end
                 love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
@@ -96,17 +96,17 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
                 end
             end
         end
-        
+
         if self.isPointerInside() then
             love.graphics.setColor(0,0,0,1)
             love.graphics.printf(self.text,self.pos.x-self.mw+1,self.pos.y-self.mh+10+4+2,self.w,'center')
         end
-        
+
         love.graphics.setColor(rgb_a_text[1],rgb_a_text[2],rgb_a_text[3],rgb_a_text[4])
         love.graphics.printf(self.text,self.pos.x-self.mw,self.pos.y-self.mh+10+mdy,self.w,'center')
 
     end
-    
+
     return self
 end
 
@@ -129,35 +129,35 @@ function BotonAldea(ima,x,y,w,h,offset)
         self.ima_sx = w/ima:getWidth()
         self.ima_sy = h/ima:getHeight()
         --sé que esto se puede simplificar, pero me da flojera
-        self.pos.z = ((ima:getWidth()*0.5)/(w/ima:getWidth()))/ima:getWidth()
-        self.pos.w = ((ima:getHeight()*0.5)/(h/ima:getHeight()))/ima:getHeight()
+        self.pos.z = ((ima:getWidth()*1)/(w/ima:getWidth()))/ima:getWidth()
+        self.pos.w = ((ima:getHeight()*1)/(h/ima:getHeight()))/ima:getHeight()
         int_w = self.pos.w
-        int_z = self.pos.z 
+        int_z = self.pos.z
         max_w = self.pos.w*4
         max_z = self.pos.z*4
     end
-    
+
     local moving = false
     local state = 1
-    
+
     function self.setText()
-    
+
     end
-    
+
     function self.setPointerPos(x,y)
         px = x
         py = y
     end
-    
+
     function self.moveEnd()
         moving = false
         --print(self.w*self.pos.z)
     end
-    
+
     function self.isMoveEnd()
         return not moving
     end
-    
+
     function self.startMove()
         if not moving and state == 1 then
             moving = true
@@ -166,16 +166,16 @@ function BotonAldea(ima,x,y,w,h,offset)
             flux.to(self,1,{dummy=1}):oncomplete(self.moveEnd)
         end
     end
-    
+
     function self.isPointerInside()
         if px < self.pos.x+(self.w-self.mw)*self.pos.z and py < self.pos.y+(self.h-self.mh)*self.pos.w then
             if px > self.pos.x-self.mw*self.pos.z and py > self.pos.y-self.mh*self.pos.w then
                return true
             end
         end
-        return false 
+        return false
     end
-    
+
     function self.goBack()
         if not moving and state == 2 then
             moving = true
@@ -184,7 +184,7 @@ function BotonAldea(ima,x,y,w,h,offset)
             flux.to(self,1,{dummy=0}):oncomplete(self.moveEnd)
         end
     end
-    
+
     function self.draw()
         local c = 0.75
         if self.isPointerInside() or state == 2 then
@@ -195,6 +195,6 @@ function BotonAldea(ima,x,y,w,h,offset)
             love.graphics.draw(self.ima,self.pos.x-self.mw*self.pos.z,self.pos.y-self.mw*self.pos.w,0,self.ima_sx*self.pos.z,self.ima_sy*self.pos.w)
         end
     end
-    
+
     return self
 end
