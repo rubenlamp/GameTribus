@@ -538,17 +538,28 @@ function Main()
     
     local STATE = 0 -- No gastarted 
     
+    local tribu_id = 0
+    
     local function goToHub()
+        MSC_DIPLOMACIA:stop()
+        TRIBUS[tribu_id] =3 --ganamos
+        if STATE == 3 then
+            MSC_DERROTA:stop()
+            TRIBUS[tribu_id] = 4 -- perdimos
+        end
         local sim_scene =  love.filesystem.load("scenes/juego.lua")()
         SCENA_MANAGER.replace(sim_scene,{FILENAME})
     end
     
     local function irAIniciarElJuego()
+        print('iniciar_juego')
         flux.to(self,0.5,{size=0}):ease("expoout"):oncomplete(mtiempo.start)
         STATE = 1
     end
 
     function self.load(settings)
+        tribu_id = settings[1]
+        
         newbutton = Boton(DIAL[LANG].gui_ready,1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
         go_back_button = Boton(DIAL[LANG].gui_return,1920/2,1080*0.92,
@@ -572,6 +583,7 @@ function Main()
         end
         
         mtiempo = MuestraTiempo(25) -- 45 segundos
+        MSC_DIPLOMACIA:play()
     end
     
     function self.draw()
@@ -630,7 +642,7 @@ function Main()
     end
     
     function self.update(dt)
-        if self.size > 0 and STATE == 0 then
+        if self.size > 0 then
             GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
         if cuadrado.isCompletado() and STATE == 1 then
@@ -640,7 +652,8 @@ function Main()
         if mtiempo.sub_w <= 3 and STATE == 1 then
             STATE = 3
             flux.to(self,2,{size=8}):ease("expoin")
-            print('Perdiste')
+            MSC_DIPLOMACIA:stop()
+            MSC_DERROTA:play()
         end
         
     end
@@ -696,6 +709,10 @@ function Main()
     end
 
     function self.mousereleased(x, y, buttom)
+        if newbutton.isPointerInside() and STATE == 0 then
+            --loadNewGame()
+            irAIniciarElJuego()
+        end
         if STATE == 1 then
             if botones_huecos[active_hueco] then
                 --check the index on the cuadro

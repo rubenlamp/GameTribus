@@ -32,8 +32,6 @@ SIZE_WIN_H = love.graphics.getHeight()
 IS_CHANGED_RESOLUTION = false
 local old_factor = SIZE_WIN_H/(base_win_size_h)
 
-
-
 function love.resize(w, h)
   SIZE_WIN_H = h
   SIZE_WIN_W = w
@@ -73,164 +71,35 @@ TRIBU_1_NAME = 'Kukao'
 TRIBU_2_NAME = 'Pizu'
 TRIBU_3_NAME = 'Walla'
 
-TRIBU_1 = 0
-TRIBU_2 = 0
-TRIBU_3 = 0
-TRIBU_4 = 0
+--[[
+ESTADOS TRIBUS 
+0 - no se ha hecho nada
+1 - se ha ganado el ataque
+2 - se perdio el ataque
+3 - se gano diplomacia
+4 - se perdio diplomacia 
+]]
+
+TRIBUS = {}
+TRIBUS[0]=0
+TRIBUS[1]=0
+TRIBUS[2]=0
+
+MSC_MAIN_MENU = nil
+MSC_MAP_MENU = nil
+MSC_ATACK = nil
+MSC_DERROTA = nil
+MSC_EXITO = nil
+MSC_TRB_MERCANTE = nil
+MSC_TRB_GUERRERA = nil
+MSC_TRB_PACIFICA = nil
 
 GAUSIAN_BLURS = nil
 
-function TitleBehaviour(char_dpl,font)
-    --set the start values
-    char_dpl.font_id_name = font
-    char_dpl.alpha = 0
-    char_dpl.scale = 1.0
-    char_dpl.cred = 0
-    char_dpl.cblue = 0
-    char_dpl.cgreen = 0
-    
-    char_dpl.awake = function ()
-        char_dpl.alpha = 0.2
-        char_dpl.x = 0 -- -10
-        char_dpl.y = 0 -- 12
-        char_dpl.scale = 2-- 3
-        
-        char_dpl.intro()
-    end
-    
-    char_dpl.intro = function()
-        ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
-        ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-    end
-    
-   char_dpl.wait = function()
-        --print('call next')
-        char_dpl.scale = 1
-        char_dpl.alpha = 1
-        char_dpl.x = 0
-        char_dpl.y = 0
-        char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
-    end
-    
-    return char_dpl
-end
-
-function BlackBehaviour(char_dpl,font)
-    --set the start values
-    char_dpl.font_id_name = font
-    char_dpl.alpha = 0
-    char_dpl.scale = 1.0
-    char_dpl.cred = 0
-    char_dpl.cblue = 0
-    char_dpl.cgreen = 0
-    
-    char_dpl.awake = function ()
-        char_dpl.alpha = 0.2
-        char_dpl.x = 0 -- -10
-        char_dpl.y = 0 -- 12
-        char_dpl.scale = 1.2-- 3
-        
-        char_dpl.intro()
-    end
-    
-    char_dpl.intro = function()
-        --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
-        --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine')
-        ayo.new(char_dpl,0.05,{scale=1}).onWait(char_dpl.wait)
-    end
-    
-    
-    
-   char_dpl.wait = function()
-        --print('call next')
-        char_dpl.scale = 1
-        char_dpl.alpha = 1
-        char_dpl.x = 0
-        char_dpl.y = 0
-        char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
-    end
-    
-    return char_dpl
-end
-
-function GreenBehaviour(char_dpl,font)
-    --set the start values
-    char_dpl.font_id_name = font
-    char_dpl.alpha = 0
-    char_dpl.cred = 0
-    char_dpl.cblue = 0
-    char_dpl.cgreen = 0.5
-    
-    char_dpl.awake = function ()
-        char_dpl.alpha = 0.2
-        char_dpl.x = 0 -- -10
-        char_dpl.y = 0 -- 12
-        char_dpl.scale = 2-- 3
-        
-        char_dpl.intro()
-    end
-    
-    char_dpl.intro = function()
-        --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
-        --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outQuad')
-        ayo.new(char_dpl,0.15,{scale=1}).setEasing('outBack').onWait(char_dpl.wait)
-    end
-   char_dpl.wait = function()
-        --print('call next')
-        char_dpl.scale = 1
-        char_dpl.alpha = 1
-        char_dpl.x = 0
-        char_dpl.y = 0
-        char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
-    end
-    
-    return char_dpl
-end
-
-function YellowBehaviour(char_dpl,font)
-    --set the start values
-    char_dpl.font_id_name = font
-    char_dpl.alpha = 0
-    char_dpl.scale = 1.0
-    char_dpl.cred = 0.78
-    char_dpl.cblue = 0
-    char_dpl.cgreen = 0.7
-    
-    char_dpl.awake = function ()
-        char_dpl.alpha = 0.5
-        char_dpl.x = 0 -- -10
-        char_dpl.y = 0 -- 12
-        char_dpl.scale = 2-- 3
-        
-        char_dpl.intro()
-    end
-    
-    char_dpl.intro = function()
-        --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
-        --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outQuad')
-        ayo.new(char_dpl,0.15,{scale=1}).setEasing('outBack').onWait(char_dpl.wait)
-    end
-   char_dpl.wait = function()
-        --print('call next')
-        char_dpl.scale = 1
-        char_dpl.alpha = 1
-        char_dpl.x = 0
-        char_dpl.y = 0
-        char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
-    end
-    
-    return char_dpl
-end
-
 FONT_BIG = nil
 FONT = nil
+FONT_SMALL = nil
+FONT_SCROLL = nil
 
 function love.load()
     --we start here chronometers
@@ -246,14 +115,27 @@ function love.load()
     CANVAS = love.graphics.newCanvas(base_win_size_w,base_win_size_h)
     CANVAS:setFilter("nearest", "nearest")
 	
+	FONT_SCROLL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',80)
+	FONT_SCROLL_SMALL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',60)
+	FONT_SMALL = love.graphics.setNewFont(45)
 	FONT = love.graphics.setNewFont(60)
 	FONT_BIG = love.graphics.setNewFont(70)
 	love.graphics.setFont(FONT)
-
-
+	
+	loadDPL(FONT_SCROLL,FONT_SCROLL,nil,70)
     --CURSOR = Cursor()
-    
-   GAUSIAN_BLURS = love.graphics.newShader[[
+	MSC_MAIN_MENU = love.audio.newSource('/rcs/music/menu.mp3','stream', true)
+	MSC_MAP_MENU = love.audio.newSource('/rcs/music/mapa.mp3','stream', true)
+	MSC_ATACK = love.audio.newSource('/rcs/music/ataque.mp3','stream', true)
+	MSC_DIPLOMACIA = love.audio.newSource('/rcs/music/diplomacia.mp3','stream', true)
+	MSC_DERROTA = love.audio.newSource('/rcs/music/derrota.mp3','stream', true)
+	MSC_EXITO = love.audio.newSource('/rcs/music/victoria_final.mp3','stream', true)
+	MSC_TRB_MERCANTE = love.audio.newSource('/rcs/music/tribu_mercante.mp3','stream', true)
+	MSC_TRB_GUERRERA = love.audio.newSource('/rcs/music/tribu_guerrera.mp3','stream', true)
+	MSC_TRB_PACIFICA = love.audio.newSource('/rcs/music/tribu_pacifica.mp3','stream', true)
+	
+	
+	GAUSIAN_BLURS = love.graphics.newShader[[
 	// This is a reimplementation of some code I found in shadertoy   
 	float Pi = 6.28318530718; // Pi*2
 	extern float Size = 2.0; // BLUR SIZE (Radius)
@@ -379,7 +261,7 @@ function love.keypressed(key,scancode, isrepeat)
     
     if key == 'f11' then
         FULL_SCREEN  = not FULL_SCREEN
-        --love.window.setFullscreen( FULL_SCREEN  )
+        love.window.setFullscreen( FULL_SCREEN  )
     end
 end
 

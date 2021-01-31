@@ -257,10 +257,17 @@ function Main()
     self.size = 64
     
     local STATE = 0 -- No gastarted 
+    local tribu_id = 0
     
     local function goToHub()
+        MSC_ATACK:stop()
+        TRIBUS[tribu_id] = 1 --ganamos
+        if STATE == 3 then
+            MSC_DERROTA:stop()
+            TRIBUS[tribu_id] = 2 -- perdimos
+        end
         local sim_scene =  love.filesystem.load("scenes/juego.lua")()
-        SCENA_MANAGER.replace(sim_scene,{FILENAME})
+        SCENA_MANAGER.replace(sim_scene)
     end
     
     local function irAIniciarElJuego()
@@ -270,6 +277,8 @@ function Main()
     end
 
     function self.load(settings)
+        tribu_id = settings[1]
+        
         newbutton = Boton(DIAL[LANG].gui_ready,1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
         go_back_button = Boton(DIAL[LANG].gui_return,1920/2,1080*0.92,
@@ -279,6 +288,7 @@ function Main()
         target = Target(1920/2,1080*0.4,40,20,1920*0.25,1920*0.75)
         control = Control(1920/2,1080*0.4,1920*0.5+40,48)
         estado_batalla = AvanceBatalla(500)
+        MSC_ATACK:play()
     end
     
     function self.draw()
@@ -347,6 +357,8 @@ function Main()
         end
         if estado_batalla.esDerrotado() and STATE == 1 then
             target.detenerMovimientos()
+            MSC_ATACK:stop()
+            MSC_DERROTA:play()
             STATE = 3
         end
         --]]

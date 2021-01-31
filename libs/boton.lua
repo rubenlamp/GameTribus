@@ -1,5 +1,5 @@
 
-function Boton(text,x,y,w,h,bg_ima)
+function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
     local self = {}
     self.pos = {}
     self.pos.x = x
@@ -79,11 +79,22 @@ function Boton(text,x,y,w,h,bg_ima)
             love.graphics.setColor(rgb_a_bg[1],rgb_a_bg[2],rgb_a_bg[3],rgb_a_bg[4])
             love.graphics.rectangle('fill',self.pos.x-self.mw,self.pos.y-self.mh,self.w,self.h,15,15,8)
         else
-            love.graphics.setColor(0.8,0.8,0.8)
-            if self.isPointerInside() then 
-                love.graphics.setColor(1,1,1)
+            local inside = self.isPointerInside()
+            if not bg_ima_hover then
+                love.graphics.setColor(0.8,0.8,0.8)
+                if inside then 
+                    love.graphics.setColor(1,1,1)
+                end
+                love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
+            else
+                if inside then
+                    love.graphics.setColor(1,1,1)
+                    love.graphics.draw(bg_ima_hover,self.pos.x-self.mw,self.pos.y-self.mh)
+                else
+                    love.graphics.setColor(0.8,0.8,0.8)
+                    love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
+                end
             end
-            love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
         end
         
         if self.isPointerInside() then
@@ -106,6 +117,7 @@ function BotonAldea(ima,x,y,w,h,offset)
     self.ima = ima
     self.pos.z = 1
     self.pos.w = 1
+    self.dummy = 0
     local int_x = x
     local int_y = y
     local int_z = 1
@@ -150,7 +162,8 @@ function BotonAldea(ima,x,y,w,h,offset)
         if not moving and state == 1 then
             moving = true
             state = 2
-            flux.to(self.pos,1,{x=(1920*1.25)+offset,y=(1080/2),z=max_z,w=max_w}):oncomplete(self.moveEnd)
+            --flux.to(self.pos,1,{x=(1920*1.25)+offset,y=(1080/2),z=max_z,w=max_w}):oncomplete(self.moveEnd)
+            flux.to(self,1,{dummy=1}):oncomplete(self.moveEnd)
         end
     end
     
@@ -167,7 +180,8 @@ function BotonAldea(ima,x,y,w,h,offset)
         if not moving and state == 2 then
             moving = true
             state = 1
-            flux.to(self.pos,1,{x=int_x,y=int_y,z=int_z,w=int_w}):oncomplete(self.moveEnd)
+            --flux.to(self.pos,1,{x=int_x,y=int_y,z=int_z,w=int_w}):oncomplete(self.moveEnd)
+            flux.to(self,1,{dummy=0}):oncomplete(self.moveEnd)
         end
     end
     
