@@ -11,10 +11,12 @@ ayo = Ayouwoki()
 
 love.filesystem.load('libs/delepanto.lua')()
 
-love.window.setTitle("GGJ 2021")
+love.filesystem.load('textos.lua')()
+
+love.window.setTitle("Before Losing")
 love.window.setMode(1920/2,1080/2,{resizable=true}) --debug
 --love.window.setMode(1920,1080,{resizable=true})
-love.graphics.setDefaultFilter( 'nearest', 'nearest', 1 )
+--love.graphics.setDefaultFilter( 'nearest', 'nearest', 1 )
 --love.mouse.setVisible(false)
 
 FULL_SCREEN = false --debug
@@ -67,6 +69,9 @@ DRAW_TIMER = Chrono()    --this one if for drawing the canvas ad a fixed rate
 SCENA_MANAGER = EscenaManager()
 
 ---TRIBUS STATUS
+TRIBU_1_NAME = 'Kukao'
+TRIBU_2_NAME = 'Pizu'
+TRIBU_3_NAME = 'Walla'
 
 TRIBU_1 = 0
 TRIBU_2 = 0
@@ -224,6 +229,8 @@ function YellowBehaviour(char_dpl,font)
     return char_dpl
 end
 
+FONT_BIG = nil
+FONT = nil
 
 function love.load()
     --we start here chronometers
@@ -239,8 +246,9 @@ function love.load()
     CANVAS = love.graphics.newCanvas(base_win_size_w,base_win_size_h)
     CANVAS:setFilter("nearest", "nearest")
 	
-	local font = love.graphics.setNewFont(60)
-	love.graphics.setFont(font)
+	FONT = love.graphics.setNewFont(60)
+	FONT_BIG = love.graphics.setNewFont(70)
+	love.graphics.setFont(FONT)
 
 
     --CURSOR = Cursor()
@@ -251,7 +259,7 @@ function love.load()
 	extern float Size = 2.0; // BLUR SIZE (Radius)
 	
     vec4 effect(vec4 color, Image tex, vec2 uv, vec2 screen_coords){
-		float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+		float Directions = 8.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
 		float Quality = 4.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
 		
 		vec2 Radius = vec2(Size/1920.0f,Size/1080.0f);
@@ -266,15 +274,15 @@ function love.load()
 			}
 		}
 		
-		texturecolor /= Quality * Directions - 15.0;
+		texturecolor /= Quality * Directions - 7.0;
+		texturecolor /= 1.2;
 		return texturecolor*color;
 	}
-  
   ]]
    local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
    --local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+   --local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
    SCENA_MANAGER.push(init_scene)
-    --SCENA_MANAGER.push(init_scene,{'tutorial/palenque'})
 end
 
 

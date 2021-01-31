@@ -8,8 +8,9 @@ function Main()
     local working_id = -1
     local offset_x = 0
     local back_ground = nil
+    
+    self.blur_size = 0
     self.cam_x = 0
-    local cam_y = 0
     
     local boton_atacar = nil
     local boton_diplom = nil
@@ -24,16 +25,21 @@ function Main()
         aldea_list[1] = BotonAldea(love.graphics.newImage("/rcs/img/aldea_icon_template_2.png"),500,700,500,500)
         aldea_list[2] = BotonAldea(love.graphics.newImage("/rcs/img/aldea_icon_template_3.png"),1920/2,600,500,500)
         
-        back_ground = love.graphics.newImage("/rcs/img/top_view.jpg")
+        back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
         
         local boton_bg =  love.graphics.newImage("/rcs/img/gui_boton_opcion.png")
-        boton_atacar =  Boton('Es hora de que\nMurais', 1920*1.75,1080*0.3,0,0,boton_bg)
-        boton_diplom =  Boton('Hablemos como\ngente civilizada', 1920*1.75,1080*0.5,0,0,boton_bg)
-        boton_go_back = Boton('Olvidalo\nmejor luego', 1920*1.75,1080*0.7,0,0,boton_bg)
+        boton_atacar =  Boton(DIAL[LANG].gui_opt_atk, 1920*1.75,1080*0.3,0,0,boton_bg)
+        boton_diplom =  Boton(DIAL[LANG].gui_opt_dial, 1920*1.75,1080*0.5,0,0,boton_bg)
+        boton_go_back = Boton(DIAL[LANG].gui_opt_ret, 1920*1.75,1080*0.7,0,0,boton_bg)
     end
     
     function self.goToDiplomMini()
         local sim_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+        SCENA_MANAGER.replace(sim_scene,{FILENAME})
+    end
+    
+    function self.goToAtaqueMini()
+        local sim_scene =  love.filesystem.load("scenes/min_atack.lua")()
         SCENA_MANAGER.replace(sim_scene,{FILENAME})
     end
     
@@ -48,12 +54,16 @@ function Main()
         
         love.graphics.translate(self.cam_x,0)
         
+        --love.graphics.setShader(GAUSIAN_BLURS)
+        
         love.graphics.draw(back_ground,0,0,0,(1920/back_ground:getWidth()),(1080/back_ground:getHeight())  )
+        --love.graphics.setShader()
+        
         love.graphics.setColor(1,0,1)
-        love.graphics.print('Escoge una aldea para hacer algo...')
+        --love.graphics.print('Escoge una aldea para hacer algo...')
         if state == 2 then
             love.graphics.setColor(0,0,0)
-            love.graphics.print('¿Qué quieres hacer?',1920*1.6,150)
+            --love.graphics.print('¿Qué quieres hacer?',1920*1.6,150)
             love.graphics.setColor(1,1,1)
             
                         
@@ -69,23 +79,23 @@ function Main()
             local show_tip = false
                     
             if boton_go_back.isPointerInside() then
-                tip_text = 'REGRESEMOS'
+                --tip_text = 'REGRESEMOS'
                 show_tip = true
             end
             if boton_diplom.isPointerInside() then
-                tip_text = 'Opcion diplomatica'
+                --tip_text = 'Opcion diplomatica'
                 show_tip = true
             end
             if boton_atacar.isPointerInside() then
-                tip_text = 'Atacar, no programado aún\n¡sorry!'
+                --tip_text = 'Opcion atacar'
                 show_tip = true
             end
             
             if show_tip then
                 love.graphics.setColor(1,0,1)
-                love.graphics.print(tip_text,1920*1.5,850)
+                --love.graphics.print(tip_text,1920*1.5,850)
                 love.graphics.setColor(0,0,0)
-                love.graphics.print(tip_text,1920*1.5-2,850)
+                --love.graphics.print(tip_text,1920*1.5-2,850)
             end
 
         end
@@ -109,11 +119,7 @@ function Main()
             aldea_list[working_id].draw()
         end
         
-        
         love.graphics.pop()
-        
-        
-        
     end
     
     function self.update(dt)
@@ -155,6 +161,9 @@ function Main()
                 end
                 if boton_diplom.isPointerInside() then
                     self.goToDiplomMini()
+                end
+                if boton_atacar.isPointerInside() then
+                    self.goToAtaqueMini()
                 end
                 --boton_atacar.isPointerInside()
             end

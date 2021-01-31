@@ -355,7 +355,7 @@ function Cuadricula(x,y,cw,ch,magico,suma)
         love.graphics.setColor(1,1,1,1)
         local x = math.floor(mx/cw)
         local y = math.floor(my/ch)
-        love.graphics.printf('Deben sumar '..tostring(suma),0,0,1920,'center')
+        love.graphics.printf(DIAL[LANG].gui_dial_sum..' '..tostring(suma),0,0,1920,'center')
         local bitsum = testMagicBit(magico,suma)
         -- filas horizontales
         
@@ -549,9 +549,9 @@ function Main()
     end
 
     function self.load(settings)
-        newbutton = Boton("¿Estas Listo?",1920/2,1080*0.92,
+        newbutton = Boton(DIAL[LANG].gui_ready,1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
-        go_back_button = Boton("Regresemos",1920/2,1080*0.92,
+        go_back_button = Boton(DIAL[LANG].gui_return,1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
         
         local magico, sum = magicCuadro()
@@ -574,25 +574,13 @@ function Main()
         mtiempo = MuestraTiempo(25) -- 45 segundos
     end
     
-    function self.update(dt)
-        if cuadrado.isCompletado() then
-            -- paren todo, ganamos!!!
-        end
-        if mtiempo.sub_w <= 0 then
-            -- perdimos :'(
-        end
-    end
-    
     function self.draw()
        
         love.graphics.clear(0.6,0.6,0.6)
         love.graphics.setColor(1,1,1)
-
         love.graphics.push()
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
-        
-        
         
             love.graphics.setShader(GAUSIAN_BLURS)
             love.graphics.setColor(1,1,1)
@@ -628,12 +616,12 @@ function Main()
             
             love.graphics.setColor(0,0,0)
             if STATE == 3 then
-                love.graphics.printf('Esas clases de retorica te estafaron.\n~ FRACASO ~ ',0,1080*0.65,1920,'center')
+                love.graphics.printf(DIAL[LANG].gui_dial_is_fail,0,1080*0.65,1920,'center')
                 go_back_button.setPointerPos(globalX, globalY)
                 go_back_button.draw()
             end
             if STATE == 4 then
-                love.graphics.printf('¡Toma Notas Churchill!\n~ EXITO ~',0,1080*0.65,1920,'center')
+                love.graphics.printf(DIAL[LANG].gui_dial_is_susses,0,1080*0.65,1920,'center')
                 go_back_button.setPointerPos(globalX, globalY)
                 go_back_button.draw()
             end
@@ -642,7 +630,7 @@ function Main()
     end
     
     function self.update(dt)
-        if self.size > 0 then
+        if self.size > 0 and STATE == 0 then
             GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
         if cuadrado.isCompletado() and STATE == 1 then

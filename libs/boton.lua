@@ -16,10 +16,10 @@ function Boton(text,x,y,w,h,bg_ima)
     self.mw = math.floor(self.w/2)
     self.mh = math.floor(self.h/2)
     
-    self.rgba_text = {0.1,0.1,0.1}
-    self.rgba = {0.8,0.6,0.7,1}
+    self.rgba_text = {0.9,0.9,0.9,1}
+    self.rgba = {0.1,0.1,0.1,0.8}
     
-    self.rgba_hover = nil
+    self.rgba_hover = {0.15,0.15,0.15,0.9}
     self.rgba_text_hover = nil
     
     
@@ -55,7 +55,6 @@ function Boton(text,x,y,w,h,bg_ima)
         local mdx = 0
         local mdy = 0
         if self.isPointerInside() then
-            self.rgba[4] = 0.9
             if not self.rgba_text_hover then
                 rgb_a_text[1] = math.min(self.rgba_text[1]+0.5)
                 rgb_a_text[2] = math.min(self.rgba_text[2]+0.5)
@@ -75,8 +74,6 @@ function Boton(text,x,y,w,h,bg_ima)
         end
         
         love.graphics.setFont(love.graphics.getFont())
-        love.graphics.setColor(0,0,0,1)
-        love.graphics.printf(self.text,self.pos.x-self.mw+2,self.pos.y-self.mh+10+4+4,self.w,'center')
         
         if not bg_ima then
             love.graphics.setColor(rgb_a_bg[1],rgb_a_bg[2],rgb_a_bg[3],rgb_a_bg[4])
@@ -87,6 +84,11 @@ function Boton(text,x,y,w,h,bg_ima)
                 love.graphics.setColor(1,1,1)
             end
             love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
+        end
+        
+        if self.isPointerInside() then
+            love.graphics.setColor(0,0,0,1)
+            love.graphics.printf(self.text,self.pos.x-self.mw+1,self.pos.y-self.mh+10+4+2,self.w,'center')
         end
         
         love.graphics.setColor(rgb_a_text[1],rgb_a_text[2],rgb_a_text[3],rgb_a_text[4])
