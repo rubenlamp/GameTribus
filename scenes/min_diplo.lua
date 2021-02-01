@@ -355,7 +355,6 @@ function Cuadricula(x,y,cw,ch,magico,suma)
         love.graphics.setColor(1,1,1,1)
         local x = math.floor(mx/cw)
         local y = math.floor(my/ch)
-        love.graphics.printf(DIAL[LANG].gui_dial_sum..' '..tostring(suma),0,0,1920,'center')
         local bitsum = testMagicBit(magico,suma)
         -- filas horizontales
         
@@ -490,7 +489,7 @@ function MuestraTiempo(tiempo)
     local self = {}
     
     self.x = (1920/2)- 400
-    self.y = 1080*0.08
+    self.y = 1080*0.17
     
     self.w = 800
     self.h = 30
@@ -523,6 +522,8 @@ function Main()
     local self = Escena()
     local screen_ima = nil  
     
+    local background = nil
+    
     local newbutton = nil
     local go_back_button = nil
     local cuadrado = nil
@@ -539,6 +540,7 @@ function Main()
     local STATE = 0 -- No gastarted 
     
     local tribu_id = 0
+    local suma = 0
     
     local function goToHub()
         MSC_DIPLOMACIA:stop()
@@ -560,25 +562,32 @@ function Main()
     function self.load(settings)
         tribu_id = settings[1]
         
-        newbutton = Boton(DIAL[LANG].gui_ready,1920/2,1080*0.92,
-                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
-        go_back_button = Boton(DIAL[LANG].gui_return,1920/2,1080*0.92,
-                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
+        background = love.graphics.newImage('/rcs/img/minijuego_background.png')
+        
+        newbutton = Boton('',1920/2,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
+                    love.graphics.newImage("/rcs/gui/start.png"),
+                    love.graphics.newImage("/rcs/gui/hover_start.png"))
+        go_back_button = Boton('',1920*0.5,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
+                    love.graphics.newImage("/rcs/gui/back.png"),
+                    love.graphics.newImage("/rcs/gui/hover_back.png"))
         
         local magico, sum = magicCuadro()
         --cambial al azar dos numero
         --testMagicPrint(magico, sum)
         magico, huecos = ponHuecos(magico)
         
-        local size_cube = 120
-        cuadrado = Cuadricula(1920/2,1080*0.35,size_cube,size_cube, magico, sum)
+        local size_cube = 100
+        suma = sum
+        cuadrado = Cuadricula(1920/2,1080*0.4,size_cube,size_cube, magico, sum)
         
         local i = 1
         local spacing = 40
         local x = 1920/2 - (size_cube+spacing)*(#huecos/2.0) + size_cube*0.25
         while huecos[i] do
             botones_huecos[i] = BotonDrawAndDrop(tostring(huecos[i]),x,1080*0.75,size_cube,size_cube)
-            x = x+(spacing+150)
+            x = x+(spacing+size_cube+size_cube*0.3)
             i=i+1
         end
         
@@ -591,14 +600,23 @@ function Main()
         love.graphics.clear(0.6,0.6,0.6)
         love.graphics.setColor(1,1,1)
         love.graphics.push()
+        
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
         
             love.graphics.setShader(GAUSIAN_BLURS)
             love.graphics.setColor(1,1,1)
+            
+            love.graphics.draw(background)
+            
             mtiempo.draw()
             
             love.graphics.setColor(1,1,1)
+            
+            love.graphics.setFont(FONT_SCROLL_SMALL )
+            
+            love.graphics.printf(tostring(suma),0,120,1920,'center')
+            love.graphics.setFont(FONT)
             
             cuadrado.setMousePos(globalX, globalY)
             cuadrado.draw()
@@ -617,6 +635,11 @@ function Main()
             end
             
             love.graphics.setShader()
+            
+            love.graphics.setFont(FONT_SCROLL_SMALL )
+            love.graphics.printf(DIAL[LANG].gui_dial_inst,0,0,1920,'center')
+            love.graphics.printf(DIAL[LANG].gui_dial_sum,0,60,1920,'center')
+            love.graphics.setFont(FONT)
             
             if STATE == 0 then
                 --love.graphics.setShader(GAUSIAN_BLURS)

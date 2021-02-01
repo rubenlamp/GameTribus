@@ -22,6 +22,8 @@ function Main()
 
     local tale_box = nil
     local scroll_ima = nil
+    
+    local rey_img = nil
 
     function self.load(settings)
         -- gui_boton_opcion.png
@@ -34,7 +36,9 @@ function Main()
         kings_list[2] = love.graphics.newImage("/rcs/img/rey_triangulo.png")
 
         back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
-
+        
+        rey_img = love.graphics.newImage("/rcs/img/rey_jugador.png")
+        
         local boton_bg = nil -- love.graphics.newImage("/rcs/img/gui_boton_opcion.png")
         --[[
         DIAL[LANG].gui_opt_atk
@@ -128,7 +132,13 @@ function Main()
         love.graphics.translate(self.cam_x,0)
 
         --love.graphics.setShader(GAUSIAN_BLURS)
-
+        
+        love.graphics.setColor(1,1,1)
+            love.graphics.draw(rey_img,
+                1920*1.4-(rey_img:getWidth()/2)*0.8,
+                1080*1.25-(rey_img:getHeight())*0.8,
+                0,-0.8,0.8)
+        
         love.graphics.draw(back_ground,0,0,0,(1920/back_ground:getWidth()),(1080/back_ground:getHeight())  )
         --love.graphics.setShader()
 
@@ -148,21 +158,20 @@ function Main()
             end
             if TRIBUS[working_id]==1 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].btl_won,
-                    1920*1.5,1080*0.26,1920*0.5,'center')
+                    1920*1.5,1080*0.26,1920*0.45,'center')
             end
             if TRIBUS[working_id]==2 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].btl_lost,
-                    1920*1.5,1080*0.26,1920*0.5,'center')
+                    1920*1.5,1080*0.26,1920*0.45,'center')
             end
             if TRIBUS[working_id]==3 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].diag_won,
-                    1920*1.5,1080*0.26,1920*0.5,'center')
+                    1920*1.5,1080*0.26,1920*0.45,'center')
             end
             if TRIBUS[working_id]==4 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].diag_lost,
-                    1920*1.5,1080*0.26,1920*0.5,'center')
+                    1920*1.5,1080*0.26,1920*0.45,'center')
             end
-
 
             boton_go_back.setPointerPos(globalX, globalY)
             boton_go_back.draw()
@@ -181,7 +190,7 @@ function Main()
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
 
-        if state <= 2 then
+        if state <= 3 then
             local i = 0
             while aldea_list[i] do
                 aldea_list[i].setPointerPos(globalX, globalY)
@@ -189,12 +198,21 @@ function Main()
                 i=i+1
             end
             -- working id goes here
-            if aldea_list[working_id] then
+            if kings_list[working_id] then
                 love.graphics.draw(kings_list[working_id],
-                    1920*1.25-kings_list[working_id]:getWidth()/2)
+                    1920*1.35-(kings_list[working_id]:getWidth()/2)*0.75,0,0,0.75,0.75  )
             end
+            
+            love.graphics.setColor(1,1,1)
+            love.graphics.draw(rey_img,
+                1920*0.77-(rey_img:getWidth()/2)*0.15,
+                1080*0.35-(rey_img:getHeight())*0.15,
+                0,0.15,0.15)
         end
-
+        
+        
+        
+        
         if state >= 4 then
 
             love.graphics.setColor(1,1,1,1)
@@ -216,8 +234,10 @@ function Main()
             boton_go_back_end.draw()
 
         end
-
+    
         love.graphics.pop()
+        
+        
     end
 
     function self.update(dt)

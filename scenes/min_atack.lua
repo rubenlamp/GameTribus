@@ -117,7 +117,7 @@ local function Target(x,y,w,h, min, max)
             local quint = (max-min)/5
             local dt = love.math.random(quint,half)
             local time = 1.2-love.math.random()
-            local espera = love.math.random(3,4)
+            local espera = love.math.random(5,7)
             local easing = love.math.random(1,4)
             print('hay que mover...',dt)
             local dir = 1
@@ -182,7 +182,9 @@ local function Target(x,y,w,h, min, max)
         love.graphics.setColor(1,1,1)
         if state_battle == -1 then
             love.graphics.setColor(1,1,1)
+            love.graphics.setFont(FONT_SCROLL_SMALL )
             love.graphics.printf(DIAL[LANG].gui_battle_gonna,0,self.y-100,1920,'center')
+            love.graphics.setFont(FONT)
         end
         
         --love.graphics.rectangle('fill', self.x-self.w*0.5, self.y-self.h*0.5, self.w, self.h)
@@ -246,8 +248,7 @@ end
 
 function Main()
     local self = Escena()
-    local screen_ima = nil  
-    
+    local background = nil
     local newbutton = nil
     local go_back_button = nil
     local target = nil
@@ -279,10 +280,16 @@ function Main()
     function self.load(settings)
         tribu_id = settings[1]
         
-        newbutton = Boton(DIAL[LANG].gui_ready,1920/2,1080*0.92,
-                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
-        go_back_button = Boton(DIAL[LANG].gui_return,1920/2,1080*0.92,
-                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25)
+        newbutton = Boton('',1920/2,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
+                    love.graphics.newImage("/rcs/gui/start.png"),
+                    love.graphics.newImage("/rcs/gui/hover_start.png"))
+        go_back_button = Boton('',1920*0.5,1080*0.92,
+                    love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
+                    love.graphics.newImage("/rcs/gui/back.png"),
+                    love.graphics.newImage("/rcs/gui/hover_back.png"))
+        
+        background = love.graphics.newImage('/rcs/img/minijuego_background.png')
         
         -- pon lo a la mitad horizonta, a 40% vertical, 40x20 px, rango de 25% a 75% horizontal
         target = Target(1920/2,1080*0.4,40,20,1920*0.25,1920*0.75)
@@ -300,15 +307,23 @@ function Main()
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
         
-            --love.graphics.setShader(GAUSIAN_BLURS)
+            love.graphics.setShader(GAUSIAN_BLURS)
+            love.graphics.setColor(1,1,1)
+            love.graphics.draw(background)
+            love.graphics.setShader()
+            
             love.graphics.setColor(1,1,1)
             
             control.draw()
             target.draw()
             
             --love.graphics.setShader()
+            
             love.graphics.setColor(1,1,1)
+            love.graphics.setFont(FONT_SCROLL_SMALL )
             love.graphics.printf(DIAL[LANG].gui_atk_inst,0,0,1920,'center')
+            love.graphics.setFont(FONT )
+            
             if STATE == 0 then
                 --love.graphics.setShader(GAUSIAN_BLURS)
                 --cuadrado.drawStandBy()

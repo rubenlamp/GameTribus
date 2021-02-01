@@ -117,6 +117,7 @@ function love.load()
 	
 	FONT_SCROLL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',80)
 	FONT_SCROLL_SMALL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',60)
+	FONT_SCROLL_SMALL:setLineHeight(0.75)
 	FONT_SMALL = love.graphics.setNewFont(45)
 	FONT = love.graphics.setNewFont(60)
 	FONT_BIG = love.graphics.setNewFont(70)

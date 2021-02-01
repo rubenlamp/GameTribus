@@ -54,11 +54,11 @@ function Main()
     end
 
     function self.load(settings)
-        background = love.graphics.newImage("/rcs/img/mapa.png")
+        background = love.graphics.newImage("/rcs/img/main_title_bg.png")
 
         scroll_ima = love.graphics.newImage("/rcs/img/Scroll.png")
 
-        game_title = love.graphics.newImage("/rcs/gui/Before_losing_logo.png")
+        game_title = love.graphics.newImage("/rcs/img/before_losing_logo.png")
 
         newbutton = Boton('',1920/2,1080*0.65,
                 love.graphics.getWidth(),love.graphics.getHeight()*0.25,

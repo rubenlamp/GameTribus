@@ -16,7 +16,8 @@ DIAL['ES'] = {
     gui_opt_ret = 'Déjame Pensarlo',
     gui_dial_is_susses = '¡Toma Notas Churchill!\n~ EXITO ~',
     gui_dial_is_fail = 'Esas clases de retorica te estafaron.\n~ FRACASO ~ ',
-    gui_dial_sum = 'Los Números Deben Sumar',
+    gui_dial_inst = 'Mueve los números al interior para completar el cuadrado magico',
+    gui_dial_sum = 'Cada lado debe sumar ',
     gui_battle_gonna = '¡La batalla esta por comenzar!',
     gui_atk_inst =
 [[Manten el círculo dentro del rectángulo.
