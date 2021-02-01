@@ -60,17 +60,17 @@ function Main()
 
         game_title = love.graphics.newImage("/rcs/gui/Before_losing_logo.png")
 
-        newbutton = Boton('',1920/2,1080*0.3,
-                love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
+        newbutton = Boton('',1920/2,1080*0.65,
+                love.graphics.getWidth(),love.graphics.getHeight()*0.25,
                 love.graphics.newImage("/rcs/gui/new_game.png"),
                 love.graphics.newImage("/rcs/gui/new_game_hover.png"))
 
-        creditos = Boton('',1920/2,1080*0.5,
+        creditos = Boton('',1920/2,1080*0.775,
                 love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                 love.graphics.newImage("/rcs/gui/creditos.png"),
                 love.graphics.newImage("/rcs/gui/creditos_hover.png"))
 
-        salir = Boton('',1920/2,1080*0.7,
+        salir = Boton('',1920/2,1080*0.9,
                 love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                 love.graphics.newImage("/rcs/gui/quit.png"),
                 love.graphics.newImage("/rcs/gui/quit_hover.png"))
@@ -107,9 +107,7 @@ function Main()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
 
         if STATE == 1 then
-            love.graphics.draw(game_title, 715)
-
-
+            love.graphics.draw(game_title, (1920/2)-595 )
             love.graphics.setColor(1,1,1)
             newbutton.setPointerPos(globalX, globalY)
             newbutton.draw()

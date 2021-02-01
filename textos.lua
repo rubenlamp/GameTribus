@@ -3,9 +3,9 @@ DIAL = {}
 DIAL['ES'] = {
     --// definimos nombres de as cosas...
     game_name = 'B E F O R E ~ L O S I N G',
-    gui_once_was_a_king = 'Una vez existio un rey bastante distraido y torpe, quien perdio algo muy importante y que estaba dispuesto a cualquier cosa para recuperarlo',
+    gui_once_was_a_king = 'Una vez existió un rey bastante distraido y torpe, quien perdió algo muy importante y que estaba dispuesto a cualquier cosa para recuperarlo',
     gui_new_game = 'Juego Nuevo',
-    gui_creditos = 'Creditos',
+    gui_creditos = 'Créditos',
     gui_team_name = 'TEAM LOS THINKING',
     gui_creditos_full = 'Mildred Ham\n\nEduardo Fierro\n\nRuben Azael Martínez Lozada\n\nPablo Rodríguez\n\nCristian Valerio\n\nPaulina Marín\n\nOsvaldo Barajas Fierros',
     gui_exit = 'Salir',
@@ -13,19 +13,19 @@ DIAL['ES'] = {
     gui_return = 'Regresar',
     gui_opt_atk = 'Atacar',
     gui_opt_dial = 'Dialogar',
-    gui_opt_ret = 'Dejame Pensarlo',
+    gui_opt_ret = 'Déjame Pensarlo',
     gui_dial_is_susses = '¡Toma Notas Churchill!\n~ EXITO ~',
     gui_dial_is_fail = 'Esas clases de retorica te estafaron.\n~ FRACASO ~ ',
-    gui_dial_sum = 'Los Numeros Deben Sumar',
+    gui_dial_sum = 'Los Números Deben Sumar',
     gui_battle_gonna = '¡La batalla esta por comenzar!',
-    gui_atk_inst = 
-[[Manten el circulo dentro del rectangulo
-Para mover hacia adelante da click varias veces
-Para ir hacia atras no hagas nada]],
+    gui_atk_inst =
+[[Manten el círculo dentro del rectángulo.
+Para mover hacia adelante da click varias veces.
+Para ir hacia atrás no hagas nada]],
     gui_atk_is_susses = 'No somos machos, ¡Pero sí somos muchos!\n~ EXITO ~',
-    gui_atk_is_fail = 'Nunca ataques con el estomago vacio\n~ FRACASO ~ ',
-    gui_victoria_final = 'Y el rey se regocijo al poder finalmente encontrar lo que habia perdido después de tantos sacrificios',
-    gui_derrota_final = 'Al final el rey perdio más de lo que tenia, y ahora vive sus días desdichado...',
+    gui_atk_is_fail = 'Nunca ataques con el estómago vacio\n~ FRACASO ~ ',
+    gui_victoria_final = 'Y el rey se regocijó al poder finalmente encontrar su mantita',
+    gui_derrota_final = 'Al final el rey perdió todo lo que tenía',
     gui_tribus = {
         [0] = { -- tribu pacifica
             btl_lost = '¡Debes dejar el camino del hierro!',
@@ -46,5 +46,5 @@ Para ir hacia atras no hagas nada]],
             diag_won = '¡No otra conversación!'
         }
     }
-    
+
     }
