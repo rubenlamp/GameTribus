@@ -101,6 +101,47 @@ FONT = nil
 FONT_SMALL = nil
 FONT_SCROLL = nil
 
+
+function BlackBehaviour(char_dpl,font)
+    --set the start values
+    char_dpl.font_id_name = font
+    char_dpl.alpha = 0
+    char_dpl.scale = 1.0
+    char_dpl.cred = 0
+    char_dpl.cblue = 0
+    char_dpl.cgreen = 0
+    
+    char_dpl.awake = function ()
+        char_dpl.alpha = 0.2
+        char_dpl.x = 0 -- -10
+        char_dpl.y = 0 -- 12
+        char_dpl.scale = 1.2-- 3
+        
+        char_dpl.intro()
+    end
+    
+    char_dpl.intro = function()
+        --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
+        --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
+        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine')
+        ayo.new(char_dpl,0.05,{scale=1}).onWait(char_dpl.wait)
+    end
+    
+    
+    
+   char_dpl.wait = function()
+        --print('call next')
+        char_dpl.scale = 1
+        char_dpl.alpha = 1
+        char_dpl.x = 0
+        char_dpl.y = 0
+        char_dpl.callNextTrue()
+        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
+    end
+    
+    return char_dpl
+end
+
 function love.load()
     --we start here chronometers
     --"iniciar" is spanish for "start" 
@@ -123,7 +164,8 @@ function love.load()
 	FONT_BIG = love.graphics.setNewFont(70)
 	love.graphics.setFont(FONT)
 	
-	loadDPL(FONT_SCROLL,FONT_SCROLL,nil,70)
+	loadNewFontDLP('regular','/rcs/fonts/Old Story Bold.ttf',60,BlackBehaviour)
+
     --CURSOR = Cursor()
 	MSC_MAIN_MENU = love.audio.newSource('/rcs/music/menu.mp3','stream', true)
 	MSC_MAP_MENU = love.audio.newSource('/rcs/music/mapa.mp3','stream', true)

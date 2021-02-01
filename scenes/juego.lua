@@ -323,7 +323,14 @@ function Main()
         MSC_DERROTA:stop()
         MSC_EXITO:stop()
         MSC_MAP_MENU:stop()
+        
+        TRIBUS = {}
+        TRIBUS[0]=0
+        TRIBUS[1]=0
+        TRIBUS[2]=0
+        
         SCENA_MANAGER.replace(sim_scene)
+        
     end
 
     function self.keyreleased( key, scancode )

@@ -51,9 +51,9 @@ local function BaseCharDLP(char_type)
     --color model
     --RGB
     self.color_model = 'rgb'
-    self.cred = 0
-    self.cgreen = 0
-    self.cblue = 0
+    self.cred = 1
+    self.cgreen = 1
+    self.cblue = 1
     
     self.call_next = false
     
@@ -181,13 +181,15 @@ local function CharDLP(char)
         
         local font = nil
         if self.font_id_name then
-            love.graphics.setFont(FONT_SCROLL_SMALL)
+            love.graphics.setFont(DPL_FontList[self.font_id_name].font)
         end
         local w = math.floor( DPL_FontList[self.font_id_name].font:getWidth(self.text)/2)
         local h = math.floor( DPL_FontList[self.font_id_name].font:getAscent( )/2)
         local minus_h =  DPL_FontList[self.font_id_name].font:getDescent( )
         
         --self.drawBG()
+        
+        love.graphics.setColor(self.cred,self.cgreen,self.cblue,self.alpha)
         
         love.graphics.print(self.text,
             self.gx+self.lx+self.x+w-self.aling,self.gy+self.ly+self.y-h,
@@ -776,7 +778,9 @@ function BaseContainerDLP(user_string,x,y,size_w)
     end
     
     function self.draw()
+        --love.graphics.setColor(1,0,1)
         --love.graphics.rectangle('line',self.pos.x,self.pos.y,size_w,100)
+
         i = 1
         while i < self.next_element do
             self.list_elements[i].draw()

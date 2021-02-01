@@ -44,13 +44,15 @@ function Main()
     end
 
     function loadNewGame()
-        local sim_scene =  love.filesystem.load("scenes/juego.lua")()
-        SCENA_MANAGER.replace(sim_scene,{FILENAME})
-        MSC_MAIN_MENU:stop()
         TRIBUS = {}
         TRIBUS[0]=0
         TRIBUS[1]=0
         TRIBUS[2]=0
+        
+        local sim_scene =  love.filesystem.load("scenes/juego.lua")()
+        SCENA_MANAGER.replace(sim_scene,{FILENAME})
+        MSC_MAIN_MENU:stop()
+        
     end
 
     function self.load(settings)
@@ -149,12 +151,7 @@ function Main()
 
         if STATE == 0 then
             love.graphics.setColor(0.2,0.2,0,self.size/16)
-
-            love.graphics.push()
-            love.graphics.translate(3,3)
-            tale_box.draw()
-            love.graphics.pop()
-
+            
             love.graphics.setColor(0,0,0,self.size/8)
             tale_box.draw()
         end
