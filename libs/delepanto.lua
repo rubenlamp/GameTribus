@@ -1,10 +1,14 @@
 --[[
 Delepanto - Una libreria para manejar texto.
 requires ayouwoki
-ver: 20200304
+ver: 20200725
 ]]
 local DPL_FontList = {}
-local CharBehaviour = nil
+CharBehaviour = nil
+
+function getFontListDLP()
+    return DPL_FontList
+end
 
 function loadDPL(regular,bold,italic,size)
     local size = size or 20
@@ -13,8 +17,17 @@ function loadDPL(regular,bold,italic,size)
     loadNewFontDLP({'italic','_'},italic,size,CharBehaviour)
 end
 
+function simpleLoadFontDPL(font_name,font_dir,font_size,behaviour,loaded_font)
+    DPL_FontList[font_name] = {}
+    DPL_FontList[font_name].name = font_name
+    DPL_FontList[font_name].rsc  = font_dir
+    DPL_FontList[font_name].size = font_size
+    DPL_FontList[font_name].bhvr = behaviour or CharBehaviour
+    DPL_FontList[font_name].font = loaded_font
+end
+
 function loadNewFontDLP(font_name,font_dir,font_size,behaviour)
-    local ok, loaded_font = pcall(love.graphics.newFont,font_dir,font_size)
+    local ok, loaded_font = pcall(love.graphics.newFont,font_dir,font_size,'light')
     if not ok then
         loaded_font = love.graphics.getFont(font_size)
     end
@@ -27,14 +40,7 @@ function loadNewFontDLP(font_name,font_dir,font_size,behaviour)
     end
 end
 
-function simpleLoadFontDPL(font_name,font_dir,font_size,behaviour,loaded_font)
-    DPL_FontList[font_name] = {}
-    DPL_FontList[font_name].name = font_name
-    DPL_FontList[font_name].rsc  = font_dir
-    DPL_FontList[font_name].size = font_size
-    DPL_FontList[font_name].bhvr = behaviour or CharBehaviour
-    DPL_FontList[font_name].font = loaded_font
-end
+
 
 local function BaseCharDLP(char_type)
     local self = {}
@@ -56,6 +62,7 @@ local function BaseCharDLP(char_type)
     self.cblue = 1
     
     self.call_next = false
+    self.call_next_word = false
     
     self.font_id_name = nil
     
@@ -101,8 +108,16 @@ local function BaseCharDLP(char_type)
         self.call_next = true
     end
     
+    function self.callNextWordTrue()
+        self.call_next_word = true
+    end
+    
     function self.canCallNext()
         return self.call_next
+    end
+    
+    function self.canCallNextWord()
+        return self.call_next_word
     end
     
     function self.drawBG()
@@ -215,10 +230,10 @@ function CharBehaviour(char_dpl,font)
     --set the start values
     char_dpl.font_id_name = font
     char_dpl.awake = function ()
-        char_dpl.alpha = 0.2
+        char_dpl.alpha = 0.1
         char_dpl.x = 0 -- -10
         char_dpl.y = 0 -- 12
-        char_dpl.scale = 1.2-- 3
+        char_dpl.scale = 3-- 3
         
         char_dpl.intro()
     end
@@ -226,7 +241,7 @@ function CharBehaviour(char_dpl,font)
     char_dpl.intro = function()
         --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
         --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine')
+        ayo.new(char_dpl,0.5,{alpha=1})
         ayo.new(char_dpl,0.075,{scale=1}).onWait(char_dpl.wait)
     end
     
@@ -239,7 +254,9 @@ function CharBehaviour(char_dpl,font)
         char_dpl.x = 0
         char_dpl.y = 0
         char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
+        local dummy = {}
+        dummy.x = 0
+        ayo.new(dummy,0.25,{x=1}).onEnd(char_dpl.callNextWordTrue)
     end
     
     --string_element.scale = 0.2
@@ -630,6 +647,10 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.repos = {}
     self.repos.x = 0
     self.repos.y = self.line_height
+    self.w = 0
+    self.h = 0
+    self.rx = 0
+    self.ry = 0
     self.last_y = self.repos.y+(self.line_height*0.5)
     self.last_x = 0
     
@@ -640,12 +661,64 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.aling_mode = 0 --0 is left
     
     self.line_list = {}
+    self.center_box = false
+    self.by_word = false
+    
+    function self.center(val)
+        self.center_box = val or false
+    end
+    
+    --if the box shoul be word by word or letter by letter
+    function self.setMode(mode,time)
+        self.by_word =  (mode == 'word')
+    end
     
     function self.setAling(mode)
         self.aling_mode = DLP_ALING_MODES[mode] or 0
+        if self.aling_mode == 1 then
+            self.rx = (size_w/2)-(self.repos.x/2)
+        end
+        if self.aling_mode == 2 then
+            self.rx = size_w
+        end
     end
     
-    function self.addNext()
+    function self.setPos(x,y)
+        --hay que actualizar la posición no solo de la caja,
+        --pero tambien de todo el texto mostrado hasta el momento...
+        self.pos.x = x
+        self.pos.y = y
+        local i = 1
+        while i < self.next_element do
+            if self.center_box then
+                local ow,oh = self.getContainerSize()
+                self.list_elements[i].setGlobalPos(self.pos.x-(size_w/2),self.pos.y-oh/2)
+            else
+                self.list_elements[i].setGlobalPos(self.pos.x,self.pos.y)
+            end
+            i=i+1
+        end
+    end
+    
+    function self.getContainerSize()
+        return self.w, self.h
+    end
+    
+    function self.getContainerPos()
+        if self.aling_mode == 0 then
+            return self.pos.x, self.pos.y
+        end
+        if self.aling_mode == 1 then
+            self.rx = math.min((size_w/2)-(self.repos.x/2),self.rx)
+            return self.pos.x+self.rx, self.pos.y
+        end
+        if self.aling_mode == 2 then
+            self.rx = math.min(size_w-self.repos.x,self.rx)
+            return self.pos.x+self.rx, self.pos.y
+        end
+    end
+    
+    function self.addCharacter()
         if self.list_elements[self.next_element] then
             if self.word_list[self.word_count][2]+1 == self.next_element then
                 --io.write(' ')
@@ -656,7 +729,9 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 if self.list_elements[self.next_element].type_DLP == 'br' then
                     --pos_x = pos_x+list_elements[next_element].getWidth()
                 end
-                self.word_count = self.word_count+1
+                if not self.by_word then
+                    self.word_count = self.word_count+1
+                end
             end
             
             -- revisamos en la lista de break si alcanzamos el punto de quiebre
@@ -669,8 +744,8 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 self.index_of_break = self.next_element
             end
             --io.write(self.list_elements[self.next_element].text)
-            
             self.list_elements[self.next_element].setGlobalPos(self.pos.x,self.pos.y)
+            
             self.list_elements[self.next_element].setLocalPos(self.repos.x,self.repos.y)
             local nx = self.list_elements[self.next_element].getWidth() or 0
             self.repos.x = self.repos.x + nx
@@ -682,8 +757,8 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 --hay que centrar todas las que estan en la linea actual
                 --conforme se agregan nuevas palabras
                 local i = self.index_of_break
+                local npos = -((size_w/2)-(self.repos.x/2))
                 while i < self.next_element do --<, we are before the increment
-                    local npos = -((size_w/2)-(self.repos.x/2))
                     self.list_elements[i].setAlingPos(npos)
                     i=i+1
                 end
@@ -693,80 +768,126 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 --hay que centrar todas las que estan en la linea actual
                 --conforme se agregan nuevas palabras
                 local i = self.index_of_break
+                local npos = self.repos.x-size_w
                 while i < self.next_element do --<, we are before the increment
-                    local npos = self.repos.x-size_w
                     self.list_elements[i].setAlingPos(npos)
                     i=i+1
                 end
             end
+            return true
         else
+            self.word_count = #self.word_list+1
             self.is_over = true
+            return false
         end
     end
     
     
-    --[[
-    function self.recalculate()
-        list_elements, word_list, break_list,space_size,height_size = wordBreakBallon(max_size,string)
-        pos_x = 0
-        pos_y = 0
-        word_count = 1
-        cbreak_index = 1
+    
+    function self.baseRecalculate(x,y,new_size,wordBreakFunction)
+        wordBreakFunction = wordBreakFunction or wordBreakBox
+        size_w = new_size or size_w
+        local list_elements, word_list, break_list, space_size, height_size = wordBreakFunction(size_w,user_string)
+        self.word_list = word_list
+        self.line_breaks  = break_list
+        self.space_size = space_size
+        self.line_height = height_size
+        
+        self.pos.x = x
+        self.pos.y = y
+        
+        self.repos.x = 0
+        self.repos.y = self.line_height
+        self.word_count = 1
+        self.cbreak_index = 1
+        self.index_of_break = 1
+
         local i = 1
-        while i < next_element do
-            list_elements[i].wait()
-            
-            if word_list[word_count][2]+1 == i then
-                
-                if list_elements[i].type_DLP == 'c' then
-                    pos_x = pos_x + space_size
-                    --io.write(' ')
-                end 
-                if list_elements[i].type_DLP == 'br' then
-                    --pos_x = pos_x+list_elements[next_element].getWidth()
-                    
-                end
-                word_count = word_count+1
-            end
-            
-            if (word_count) == break_list[cbreak_index] then
-                cbreak_index = break_list[cbreak_index]
-                pos_y = pos_y+height_size
-                pos_x = 0
-            end
-            --io.write(list_elements[next_element].type_DLP)
-            --print(list_elements[next_element].type_DLP, word_count,word_list[word_count][1],word_list[word_count][2],word_list[word_count][3])
-            list_elements[i].setGlobalPos(pos_x,pos_y)
-            local nx = list_elements[i].getWidth() or 0
-            pos_x = pos_x + nx
-            
+        local old_next_element = self.next_element
+        self.next_element = 1
+        while i < old_next_element do
+            self.addCharacter()
             i=i+1
         end
     end
-    --]]
     
+    function self.baseResetText(new_user_string,wordBreakFunction)
+        self.next_element = 1
+        self.is_over = false
+        user_string = new_user_string or user_string
+        wordBreakFunction = wordBreakFunction or wordBreakBox
+        local list_elements, word_list, break_list, space_size, height_size = wordBreakFunction(size_w,user_string)
+        self.list_elements = list_elements
+        self.word_list = word_list
+        self.line_breaks  = break_list
+        self.space_size = space_size
+        self.line_height = height_size
+        
+        self.pos.x = x
+        self.pos.y = y
+        
+        self.repos.x = 0
+        self.repos.y = self.line_height
+        self.last_y = self.repos.y+(self.line_height*0.5)
+        self.last_x = 0
+        
+        self.word_count = 1
+        self.cbreak_index = 1
+        self.index_of_break = 1
+
+    end
+    
+    function self.addNext()        
+        if self.by_word then
+            if self.word_count <= #self.word_list then
+                local c_start = self.word_list[self.word_count][2]-self.word_list[self.word_count][3]
+                local c_end = self.word_list[self.word_count][2]
+                while c_start < c_end do
+                    self.addCharacter()
+                    c_start = c_start+1
+                end
+                self.word_count = self.word_count+1
+                self.repos.x = self.repos.x + self.space_size
+            end
+        else
+            self.addCharacter()
+        end
+    end
     
     function self.update(dt)
-        
-        
         local i = 1
         while self.list_elements[i] do
             if i == self.next_element-1 then
-                if self.list_elements[i].canCallNext() then
-                    self.addNext()
+                if self.by_word then
+                    if self.list_elements[i].canCallNextWord() then
+                        self.addNext()
+                    else
+                        break
+                    end
                 else
-                    break
+                    if self.list_elements[i].canCallNext() then
+                        self.addNext()
+                    else
+                        break
+                    end
                 end
-                
             end
             i=i+1
         end
+        
+        if self.center_box then
+            self.setPos(self.pos.x,self.pos.y)
+        end
+    
+        local dt = dt or 1 
         if self.last_y < self.repos.y+(self.line_height*0.5) then
             self.last_y = self.last_y+self.line_height*dt*5
         end
         if self.last_x < self.repos.x then
             self.last_x = self.last_x+(self.repos.x-self.last_x)
         end
+        self.w = math.max(self.w,self.last_x) 
+        self.h = math.max(self.h,self.last_y)
     end
     
     function self.start()
@@ -777,10 +898,16 @@ function BaseContainerDLP(user_string,x,y,size_w)
         return self.is_over
     end
     
+    function self.showAll()
+        --force to show all the text at the same time
+        while self.list_elements[self.next_element] do
+            self.addCharacter()
+        end
+    end
+    
     function self.draw()
         --love.graphics.setColor(1,0,1)
         --love.graphics.rectangle('line',self.pos.x,self.pos.y,size_w,100)
-
         i = 1
         while i < self.next_element do
             self.list_elements[i].draw()
@@ -809,6 +936,14 @@ function BoxTextDLP(user_string,x,y,size_w)
     self.last_y = self.repos.y+(self.line_height*0.5)
     self.last_x = 0
     
+    function self.recalculate(x,y,new_size)
+        self.baseRecalculate(x,y,new_size,wordBreakBox)
+    end
+    
+    function self.resetText(new_user_string)
+        self.baseResetText(new_user_string,wordBreakBox)
+    end
+    
     return self
 end
 
@@ -828,6 +963,14 @@ function BallonTextDLP(user_string,x,y,size_w)
     self.repos.y = self.line_height
     self.last_y = self.repos.y+(self.line_height*0.5)
     self.last_x = 0
+    
+    function self.recalculate(x,y,new_size)
+        self.baseRecalculate(x,y,new_size,wordBreakBallon)
+    end
+    
+    function self.resetText(new_user_string)
+        self.baseResetText(new_user_string,wordBreakBallon)
+    end
     
     return self
 end

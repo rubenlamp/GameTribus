@@ -44,12 +44,14 @@ function Main()
     end
 
     function loadNewGame()
+        -- limpiar los resultados de los minijuegos.
+        -- reinica el juego
         TRIBUS = {}
         TRIBUS[0]=0
         TRIBUS[1]=0
         TRIBUS[2]=0
         
-        local sim_scene =  love.filesystem.load("scenes/juego.lua")()
+        local sim_scene =  love.filesystem.load("scenes/intro.lua")()
         SCENA_MANAGER.replace(sim_scene,{FILENAME})
         MSC_MAIN_MENU:stop()
         

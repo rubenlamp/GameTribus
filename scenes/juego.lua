@@ -24,6 +24,8 @@ function Main()
     local scroll_ima = nil
     
     local rey_img = nil
+    
+    local neutral_id = 1
 
     function self.load(settings)
         -- gui_boton_opcion.png
@@ -35,8 +37,6 @@ function Main()
         kings_list[1] = love.graphics.newImage("/rcs/img/rey_cuadrado.png")
         kings_list[2] = love.graphics.newImage("/rcs/img/rey_triangulo.png")
 
-        back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
-        
         rey_img = love.graphics.newImage("/rcs/img/rey_jugador.png")
         
         local boton_bg = nil -- love.graphics.newImage("/rcs/img/gui_boton_opcion.png")
@@ -45,9 +45,9 @@ function Main()
         DIAL[LANG].gui_opt_dial
         DIAL[LANG].gui_opt_ret
         ]]
-        boton_atacar =  Boton('', 1920*1.75,1080*0.3,0,0,
+        boton_atacar =  Boton('', 1920*1.75,1080*0.4,0,0,
             love.graphics.newImage("/rcs/gui/attack.png"),love.graphics.newImage("/rcs/gui/hover_attack.png"))
-        boton_diplom =  Boton('', 1920*1.75,1080*0.5,0,0,
+        boton_diplom =  Boton('', 1920*1.75,1080*0.55,0,0,
             love.graphics.newImage("/rcs/gui/diplomacy.png"),love.graphics.newImage("/rcs/gui/hover_diplomacy.png"))
 
         local back_img = love.graphics.newImage("/rcs/gui/back.png")
@@ -55,10 +55,15 @@ function Main()
         boton_go_back = Boton('', 1920*1.75,1080*0.7,0,0,
             back_img,back_img_hover)
 
-        boton_go_back_end = Boton('', 1920*0.5,1080*0.8,0,0,
+        boton_go_back_end = Boton('', 1920*0.5,1080*0.94,0,0,
             back_img,back_img_hover)
 
         MSC_MAP_MENU:play()
+        
+        
+        if (TRIBUS[0] > 0) then neutral_id = neutral_id+1 end
+        if (TRIBUS[1] > 0) then neutral_id = neutral_id+1 end
+        if (TRIBUS[2] > 0) then neutral_id = neutral_id+1 end
 
         if TRIBUS[0] > 0 and TRIBUS[1] > 0 and TRIBUS[2] > 0 then
             MSC_MAP_MENU:stop()
@@ -74,19 +79,25 @@ function Main()
                 state = 4 -- victoria
                 MSC_EXITO:play()
                 tell = DIAL[LANG].gui_victoria_final
+                back_ground = love.graphics.newImage("/rcs/scenes/rey_victoria.png")
+                --tale box esta un poco más abajo
+                tale_box =  BoxTextDLP(tell, 1920/2-400, 1080*0.7, 800)
             else
                 state = 5 -- derrota
                 MSC_DERROTA:play()
                 tell = DIAL[LANG].gui_derrota_final
+                back_ground = love.graphics.newImage("/rcs/scenes/rey_derrota.png")
+                tale_box =  BoxTextDLP(tell, 1920/2-400, 1080*0.1, 800)
             end
 
-            tale_box =  BoxTextDLP(tell,1920/2-400,
-                1080*0.3,800)
+            
 
             scroll_ima = love.graphics.newImage("/rcs/img/Scroll.png")
 
             tale_box.setAling('center')
             tale_box.start()
+        else
+            back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
         end
     end
 
@@ -141,14 +152,12 @@ function Main()
         
         love.graphics.draw(back_ground,0,0,0,(1920/back_ground:getWidth()),(1080/back_ground:getHeight())  )
         --love.graphics.setShader()
-
-        love.graphics.setColor(1,0,1)
+            
         --love.graphics.print('Escoge una aldea para hacer algo...')
         if state == 2 then
-            love.graphics.setColor(0,0,0)
-            --love.graphics.print('¿Qué quieres hacer?',1920*1.6,150)
             love.graphics.setColor(1,1,1)
-
+            love.graphics.setFont(FONT_SCROLL_SMALL )
+            
             if TRIBUS[working_id]==0 then
                 boton_atacar.setPointerPos(globalX, globalY)
                 boton_atacar.draw()
@@ -156,26 +165,22 @@ function Main()
                 boton_diplom.setPointerPos(globalX, globalY)
                 boton_diplom.draw()
             end
-            if TRIBUS[working_id]==1 then
+            if TRIBUS[working_id] == 0 then
+                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].neutral[neutral_id],
+                    1920*1.5,1080*0.05,1920*0.5,'center')
+            end
+            if TRIBUS[working_id]==1  or TRIBUS[working_id]==2 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].btl_won,
-                    1920*1.5,1080*0.26,1920*0.45,'center')
+                    1920*1.5,1080*0.05,1920*0.5,'center')
             end
-            if TRIBUS[working_id]==2 then
-                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].btl_lost,
-                    1920*1.5,1080*0.26,1920*0.45,'center')
-            end
-            if TRIBUS[working_id]==3 then
+            if TRIBUS[working_id]==3 or TRIBUS[working_id]==4 then
                 love.graphics.printf(DIAL[LANG].gui_tribus[working_id].diag_won,
-                    1920*1.5,1080*0.26,1920*0.45,'center')
+                    1920*1.5,1080*0.05,1920*0.5,'center')
             end
-            if TRIBUS[working_id]==4 then
-                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].diag_lost,
-                    1920*1.5,1080*0.26,1920*0.45,'center')
-            end
-
+            love.graphics.setFont(FONT)
+            
             boton_go_back.setPointerPos(globalX, globalY)
             boton_go_back.draw()
-
 
             if show_tip then
                 love.graphics.setColor(1,0,1)
@@ -203,6 +208,10 @@ function Main()
                     1920*1.35-(kings_list[working_id]:getWidth()/2)*0.75,0,0,0.75,0.75  )
             end
             
+            love.graphics.setFont(FONT_SCROLL_SMALL )
+            love.graphics.setColor(0,0,0)
+            love.graphics.printf(DIAL[LANG].gui_choose_status[neutral_id],1920/2-400,1080*0.05,800,'center')
+            
             love.graphics.setColor(1,1,1)
             love.graphics.draw(rey_img,
                 1920*0.77-(rey_img:getWidth()/2)*0.15,
@@ -216,20 +225,16 @@ function Main()
         if state >= 4 then
 
             love.graphics.setColor(1,1,1,1)
+            --[[
             love.graphics.draw(scroll_ima,
                 1920/2-(scroll_ima:getWidth()/2)*2.6,
                 1080/2-(scroll_ima:getHeight()/2)*2.30,0,2.6,2.3)
-
+            --]]
             love.graphics.setColor(0.2,0.2,0)
-
-            love.graphics.push()
-            love.graphics.translate(3,3)
-            tale_box.draw()
-            love.graphics.pop()
-
+            
             love.graphics.setColor(0,0,0)
             tale_box.draw()
-
+            
             boton_go_back_end.setPointerPos(globalX, globalY)
             boton_go_back_end.draw()
 
