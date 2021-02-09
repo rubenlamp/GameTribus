@@ -1,7 +1,7 @@
 --[[
 Delepanto - Una libreria para manejar texto.
 requires ayouwoki
-ver: 20200725
+ver: 20210208
 ]]
 local DPL_FontList = {}
 CharBehaviour = nil
@@ -663,14 +663,18 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.line_list = {}
     self.center_box = false
     self.by_word = false
+    self.static = false
+    
+    local max_repos_x = 0
     
     function self.center(val)
         self.center_box = val or false
     end
     
     --if the box shoul be word by word or letter by letter
-    function self.setMode(mode,time)
-        self.by_word =  (mode == 'word')
+    function self.setMode(mode,static)
+        self.by_word = (mode == 'word')
+        self.static = (static == 'static')
     end
     
     function self.setAling(mode)
@@ -734,6 +738,8 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 end
             end
             
+            
+            
             -- revisamos en la lista de break si alcanzamos el punto de quiebre
             -- si lo alcanzamos, entonces fijamos el proximo punto de quiebre
             -- en el valor guardado
@@ -741,14 +747,37 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 self.cbreak_index = self.line_breaks[self.cbreak_index]
                 self.repos.y = self.repos.y+self.line_height
                 self.repos.x = 0
+                max_repos_x = 0
                 self.index_of_break = self.next_element
             end
+            
+            if max_repos_x == 0 and self.static then
+                local word_count = math.floor(self.word_count)
+                local next_element = math.floor(self.next_element)
+                local c_break_index = math.floor(self.cbreak_index)
+                max_repos_x = 0
+                while word_count ~= self.line_breaks[self.cbreak_index] do
+                    local c_start = self.word_list[word_count][2]-self.word_list[word_count][3]
+                    local c_end = self.word_list[word_count][2]
+                    while c_start < c_end do
+                        max_repos_x = max_repos_x + self.list_elements[next_element].getWidth()
+                        next_element= next_element+1
+                        c_start = c_start+1
+                    end
+                    word_count = word_count+1
+                    max_repos_x  = max_repos_x + self.space_size
+                end
+            end
+            
+            
             --io.write(self.list_elements[self.next_element].text)
             self.list_elements[self.next_element].setGlobalPos(self.pos.x,self.pos.y)
             
             self.list_elements[self.next_element].setLocalPos(self.repos.x,self.repos.y)
             local nx = self.list_elements[self.next_element].getWidth() or 0
             self.repos.x = self.repos.x + nx
+            
+            local max_repox = 0
             
             self.list_elements[self.next_element].awake()
             self.next_element = self.next_element+1
@@ -757,7 +786,8 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 --hay que centrar todas las que estan en la linea actual
                 --conforme se agregan nuevas palabras
                 local i = self.index_of_break
-                local npos = -((size_w/2)-(self.repos.x/2))
+                -- note, max_repos solo puede ser más grande que cero si es static
+                local npos = -((size_w/2)-(math.max(self.repos.x,max_repos_x)/2))
                 while i < self.next_element do --<, we are before the increment
                     self.list_elements[i].setAlingPos(npos)
                     i=i+1
@@ -768,7 +798,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 --hay que centrar todas las que estan en la linea actual
                 --conforme se agregan nuevas palabras
                 local i = self.index_of_break
-                local npos = self.repos.x-size_w
+                local npos = math.max(self.repos.x,max_repos_x)-size_w
                 while i < self.next_element do --<, we are before the increment
                     self.list_elements[i].setAlingPos(npos)
                     i=i+1
@@ -837,7 +867,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
 
     end
     
-    function self.addNext()        
+    function self.addNext()
         if self.by_word then
             if self.word_count <= #self.word_list then
                 local c_start = self.word_list[self.word_count][2]-self.word_list[self.word_count][3]
@@ -882,6 +912,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
         local dt = dt or 1 
         if self.last_y < self.repos.y+(self.line_height*0.5) then
             self.last_y = self.last_y+self.line_height*dt*5
+            self.last_y = math.min(self.repos.y+(self.line_height*0.5),self.last_y)
         end
         if self.last_x < self.repos.x then
             self.last_x = self.last_x+(self.repos.x-self.last_x)
@@ -907,7 +938,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     
     function self.draw()
         --love.graphics.setColor(1,0,1)
-        --love.graphics.rectangle('line',self.pos.x,self.pos.y,size_w,100)
+        --love.graphics.rectangle('line',self.pos.x,self.pos.y,self.repos.x,self.repos.y)
         i = 1
         while i < self.next_element do
             self.list_elements[i].draw()

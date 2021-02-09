@@ -29,8 +29,13 @@ Para ir hacia atrás no hagas nada]],
     gui_derrota_final = 'Al final el rey perdió todo lo que tenía',
     
     tale_intro = {
-        "Kukao, the merchant. Pizu, the harvesters. Walla, the waring. Usay, the exalted. These four tribes of the valley lived in balance until a fateful day…",
-        "A sacred artifact of the king of Usay has disappeared. Wrathful, he has sworn to uncover the culprit across the valley."
+        "Kukao, the merchant",
+        "Pizu, the harvesters.",
+        "Walla, the waring.",
+        "Usay, the exalted.",
+        "These four tribes of the valley lived in balance until a fateful day…",
+        "A sacred artifact of the king of Usay disappeared.",
+        "Wrathful, he sworn to uncover the culprit across the valley."
     },
     
     tale_won = {

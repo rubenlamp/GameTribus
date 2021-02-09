@@ -320,7 +320,7 @@ function Main()
             --love.graphics.setShader()
             
             love.graphics.setColor(1,1,1)
-            love.graphics.setFont(FONT_SCROLL_SMALL )
+            love.graphics.setFont(FONT_SCROLL_SMALL)
             love.graphics.printf(DIAL[LANG].gui_atk_inst,0,0,1920,'center')
             love.graphics.setFont(FONT )
             

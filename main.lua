@@ -25,6 +25,10 @@ CANVAS = nil
 
 local base_win_size_w =  1920
 local base_win_size_h= 1080
+--
+SIZE_B_WIN_W = base_win_size_w
+SIZE_B_WIN_H = base_win_size_h
+
 --current window size...
 SIZE_WIN_W = love.graphics.getWidth()
 SIZE_WIN_H = love.graphics.getHeight()
@@ -112,10 +116,10 @@ function BlackBehaviour(char_dpl,font)
     char_dpl.cgreen = 0
     
     char_dpl.awake = function ()
-        char_dpl.alpha = 0.2
-        char_dpl.x = 0 -- -10
-        char_dpl.y = 0 -- 12
-        char_dpl.scale = 1.2-- 3
+        char_dpl.alpha = 0.5
+        char_dpl.x = -1
+        char_dpl.y = -1
+        char_dpl.scale = 0.1-- 3
         
         char_dpl.intro()
     end
@@ -123,7 +127,7 @@ function BlackBehaviour(char_dpl,font)
     char_dpl.intro = function()
         --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
         --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine')
+        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine').chain(0.1,{alpha=0.8})
         ayo.new(char_dpl,0.05,{scale=1}).onWait(char_dpl.wait)
     end
     
@@ -136,11 +140,12 @@ function BlackBehaviour(char_dpl,font)
         char_dpl.x = 0
         char_dpl.y = 0
         char_dpl.callNextTrue()
-        --ayo.new(char_dpl,0.1,{scale=0.90}).chain(0.3,{scale=1})
+        ayo.new(char_dpl,0.1,{scale=0.92}).chain(0.3,{scale=1})
     end
     
     return char_dpl
 end
+
 
 function love.load()
     --we start here chronometers
@@ -204,8 +209,8 @@ function love.load()
 		return texturecolor*color;
 	}
   ]]
-   local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
-   --local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()
+   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   local init_scene =  love.filesystem.load("scenes/intro.lua")()
    --local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
    SCENA_MANAGER.push(init_scene)
 end
