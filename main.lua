@@ -105,6 +105,9 @@ FONT = nil
 FONT_SMALL = nil
 FONT_SCROLL = nil
 
+SCROLL_TOP_IMA = nil
+SCROLL_BG_IMA = nil
+
 
 function BlackBehaviour(char_dpl,font)
     --set the start values
@@ -182,6 +185,8 @@ function love.load()
 	MSC_TRB_GUERRERA = love.audio.newSource('/rcs/music/tribu_guerrera.mp3','stream', true)
 	MSC_TRB_PACIFICA = love.audio.newSource('/rcs/music/tribu_pacifica.mp3','stream', true)
 	
+	SCROLL_TOP_IMA = love.graphics.newImage("/rcs/img/scroll_head.png")
+	SCROLL_BG_IMA = love.graphics.newImage("/rcs/img/scroll_body.png")
 	
 	GAUSIAN_BLURS = love.graphics.newShader[[
 	// This is a reimplementation of some code I found in shadertoy   
@@ -209,8 +214,8 @@ function love.load()
 		return texturecolor*color;
 	}
   ]]
-   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
-   local init_scene =  love.filesystem.load("scenes/intro.lua")()
+   local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   --local init_scene =  love.filesystem.load("scenes/intro.lua")()
    --local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
    SCENA_MANAGER.push(init_scene)
 end

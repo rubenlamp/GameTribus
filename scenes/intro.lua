@@ -1,5 +1,5 @@
 
-function DialogBox(char_name, says, px,py, box_with)
+function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
     local current_w, h = SIZE_B_WIN_W, SIZE_B_WIN_H
     local offset_y = 0
     
@@ -18,8 +18,8 @@ function DialogBox(char_name, says, px,py, box_with)
     
 	print(prc_x,prc_y)
 	
-    local scroll_bg = love.graphics.newImage("/rcs/img/scroll_body.png")
-	local scroll_top = love.graphics.newImage("/rcs/img/scroll_head.png")
+    local scroll_bg = SCROLL_BG_IMA
+	local scroll_top = SCROLL_TOP_IMA
     scroll_bg:setWrap('clampzero','repeat')
 	
 	local quad_scroll = love.graphics.newQuad(0,0, scroll_bg:getWidth(), scroll_bg:getHeight(), scroll_bg:getWidth(), scroll_bg:getHeight())
@@ -37,10 +37,28 @@ function DialogBox(char_name, says, px,py, box_with)
     local char_name_w  = char_name_font:getWidth(char_name or '')+10
     local char_name_h = char_name_font:getHeight()
     
-    rect.x = 0.5 --this are not pixels, put percents % 
-    rect.y = 1 
+	
+	
+	local end_px = prc_x
+	local end_py = prc_y
+	
+	rect.x = prc_x 
+	rect.y = prc_y
     rect.w = 0
     rect.h = 0
+	
+	if stx then
+		rect.x = stx-((box_with/current_w)/2)--this are not pixels, put percents %
+	end
+	if sty then
+		rect.y = sty
+	end
+	if endx then
+		end_px = endx-((box_with/current_w)/2)
+	end
+	if endy then
+		end_py = endy
+	end
 	
 	rect.offset_bottom = 0.72
 	
@@ -48,6 +66,7 @@ function DialogBox(char_name, says, px,py, box_with)
     self.draw_text = self.draw --the one hynereted by Box text
     self.startDialogText = self.start --
     self.isTextEnded = self.isEnded
+
     local start_char_dialog = false
 
     function self.endDialog()
@@ -72,11 +91,7 @@ function DialogBox(char_name, says, px,py, box_with)
     
     function self.startEndDialog()
         if not end_dialog_started then
-            ayo.new(
-				rect,
-				0.35,
-				 {offset_bottom = ((113)/math.floor(self.last_y+self.line_height)) }
-				).chain(0.35,{x=0.5,y=0.50,w=0,h=0}).setEasing('inQuint').onEnd(self.endDialog)
+            ayo.new(rect, 1, {offset_bottom = ((113)/math.floor(self.last_y+self.line_height)), w=0, h=0, x=end_px, y=end_py }).setEasing('outQuint').onEnd(self.endDialog)
             end_dialog_started = true
         end
     end
@@ -93,13 +108,6 @@ function DialogBox(char_name, says, px,py, box_with)
     local old_update = self.update
     function self.update(dt)
         old_update(dt)
-        offset_y = 0
-        local nw, nh = SIZE_B_WIN_W, SIZE_B_WIN_H
-        if nw ~= current_w then
-            current_w = nw
-            h = nh
-            self.recalculate(padding, (rect.y+offset_y)*h, nw-padding*2)
-        end
     end
     
     function self.start()
@@ -124,11 +132,6 @@ function DialogBox(char_name, says, px,py, box_with)
         local y = (rect.y+offset_y)*h
         local b = h*0.2
         local box_h =  rect.h*b
-        --love.graphics.setColor(0,0,0)
-        --love.graphics.rectangle('fill', x, y-1, rect.w*w, box_h)
-        --self.setPos(rect.x*w ,rect.y*h)
-        --love.graphics.setColor(0.5,0.5,0.5,1)
-        --love.graphics.rectangle('line', x, y, rect.w*w-2, box_h)
         
         if char_name and start_char_dialog and not end_dialog_started then
             local nx = x+padding
@@ -141,7 +144,7 @@ function DialogBox(char_name, says, px,py, box_with)
         
         local scroll_scale_x = (( (rect.w+0.08)*w )/scroll_bg:getWidth())
         local scroll_scale_y = ((self.last_y)/scroll_bg:getHeight())
-        local scroll_x = (rect.x-0.04)*w
+        local scroll_x = (rect.x-0.04)*w + rect.w-(rect.w/2)*w + ((box_with/current_w)/2)*w
         local scroll_y = y
         --love.graphics.setColor(1,0,1)
 		
@@ -154,9 +157,7 @@ function DialogBox(char_name, says, px,py, box_with)
         love.graphics.setColor(1,1,1,rect.h)
 		
 		love.graphics.draw(scroll_bg,quad_scroll,scroll_x,scroll_y,0,scroll_scale_x,1)
-        
-		
-        
+
         if not end_dialog_started then
             --self.next_element if from the base DLP
             self.draw_text()
@@ -164,9 +165,8 @@ function DialogBox(char_name, says, px,py, box_with)
 		
 		love.graphics.setColor(1,1,1,rect.h)
 		love.graphics.draw(scroll_top,scroll_x,scroll_y+math.floor(self.last_y+self.line_height)*rect.offset_bottom,0,scroll_scale_x,-1)
-		love.graphics.draw(scroll_top,scroll_x,scroll_y-(scroll_top:getHeight()*(2/3)),0,scroll_scale_x,1)
-		love.graphics.print(tostring(rect.offset_bottom))
-    end
+		love.graphics.draw(scroll_top,scroll_x,scroll_y-(scroll_top:getHeight()*0.7),0,scroll_scale_x,1)
+	end
     
     return self
 end
@@ -176,44 +176,20 @@ function Main()
     
     local background = nil
     local STATE = 0
+	
     local limpiar_fondo = false
-
-    local scroll_ima = nil
+	local started_exit = false
     self.size = 8
-    self.dummy = 0
-
-    local tale_text = ''
-    local current_char = 0
-
-    local tale_box = nil
+	
     local current_text = 1
     local ocupado_texto = false
     
     local dialog = nil
-    
-    function changeState()
-        STATE = 1
-        tale_box.start()
-    end
-    
-    function increaseNumber()
-        tale_box.pos.y = 1080*0.7
-        current_text = current_text+1
-        if current_text > #DIAL[LANG].tale_intro then
-            local sim_scene =  love.filesystem.load("scenes/juego.lua")()
-            SCENA_MANAGER.replace(sim_scene,{FILENAME})
-            MSC_MAIN_MENU:stop()
-        end
-    end
-    
-    function goNextText()
-        if current_text <= #DIAL[LANG].tale_intro then
-            ocupado_texto = false
-            tale_box.resetText(DIAL[LANG].tale_intro[current_text])
-            tale_box.pos.y = 1080*0.7
-            tale_box.start()
-        end
-    end
+	local dialog_list = {}
+    local alphas = {}
+	alphas.a = 0
+	alphas.b = 0
+	alphas.dummi = 0
 
     function limpiaFondo()
         if not limpiar_fondo then
@@ -221,6 +197,10 @@ function Main()
             limpiar_fondo = true
         end
     end
+	
+	function changeState()
+		STATE = 1
+	end
 
     function ensuciaFondo()
         STATE = 3
@@ -233,6 +213,18 @@ function Main()
         MSC_MAIN_MENU:stop()
         
     end
+	
+	function startEndDialog()
+		--print('startEndDialog')
+		dialog.startEndDialog()
+		alphas.dummi = 0
+		ocupado_texto = false
+	end
+	
+	function startDialog()
+		print('start Dialog')
+		dialog.start()
+	end
 
     function self.load(settings)
         
@@ -240,75 +232,95 @@ function Main()
             love.graphics.newImage("/rcs/img/mapa.png"),
             love.graphics.newImage("/rcs/scenes/rey_buscando.png")
         }
-        
-        scroll_ima = love.graphics.newImage("/rcs/img/Scroll.png")
-        
+
         GAUSIAN_BLURS:send("Size", math.floor(self.size) )
-        --flux.to(self,0.5,{dummy=1}):ease("linear"):oncomplete(addChar)
-        tale_box =  BoxTextDLP('',1920/2-400,
-                1080*0.3,800)
-        tale_box.setAling('center')
-        
         MSC_MAIN_MENU:play()
         
         limpiaFondo()
         
-        dialog = DialogBox(nil,DIAL[LANG].tale_intro, 0.2, 0.5, 500)
-        dialog.start()
+		local positions = {
+			{0.25,0.05},
+			{0.75,0.8},
+			{0.25,0.8},
+			{0.75,0.05},
+			{0.5,0.3},
+			{0.25,0.2},
+			{0.75,0.6}
+			}
+		for k, v in ipairs(DIAL[LANG].tale_intro) do
+			current_text = 1
+			dialog_list[k] = DialogBox(nil,v, 500, positions[k][1], positions[k][2])
+		end
+		
+		ayo.new(alphas,1,{a=1}).setEasing('inSine').onEnd(startDialog)
+		
+        dialog = dialog_list[current_text]
     end
 
     function self.draw()
 
-        love.graphics.clear(0.5,0.3,0.2)
+        love.graphics.clear(0,0,0)
         love.graphics.setColor(1,1,1)
 
         local zoom = 1
         love.graphics.push()
         
         love.graphics.setShader(GAUSIAN_BLURS)
-        love.graphics.setColor(1,1,1)
-        love.graphics.draw(background[current_text],0,0,0,
-            (1920/background[current_text]:getWidth()),(1080/background[current_text]:getHeight())  )
+        
+		love.graphics.setColor(1,1,1,alphas.a)
+        love.graphics.draw(background[1],0,0,0,
+            (1920/background[1]:getWidth()),(1080/background[1]:getHeight())  )
+		love.graphics.setColor(1,1,1,alphas.b)
+		love.graphics.draw(background[2],0,0,0,
+            (1920/background[2]:getWidth()),(1080/background[1]:getHeight())  )
+		
         love.graphics.setShader()
-        
-            local scroll_scale_x = (1200/scroll_ima:getWidth())
-            local scroll_scale_y = ((tale_box.line_height*8)/scroll_ima:getHeight())
-            local scroll_x = (1920/2)-600
-            local scroll_y = tale_box.pos.y-75
-            love.graphics.setColor(1,1,1,1-self.size/8)        
-            --love.graphics.draw(scroll_ima,scroll_x,scroll_y,0, scroll_scale_x,scroll_scale_y)
-            
-            if self.size == 0 then
-                love.graphics.setColor(0,0,0)
-                tale_box.draw()
-            end
-
-        
+		
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
-    
-        dialog.draw() 
-        
+		
+		if dialog then
+			dialog.draw() 
+        end
+		
         love.graphics.pop()
     end
 
     function self.update(dt)
         GAUSIAN_BLURS:send("Size", math.floor(self.size) )
+		
         
-        --[[
-        tale_box.update(dt)
-        if tale_box.isEnded() and not ocupado_texto then
-            flux.to(self,1,{size= 8}):ease('quintout'):delay(2):oncomplete(increaseNumber):after(self,1,{size=0}):ease('quintin'):oncomplete(goNextText)
-            ocupado_texto = true
-        end
-        ]]
-        dialog.update(dt)
-    end
+		if dialog then
+			dialog.update(dt)
+			
+			if dialog.isEnded() and not  ocupado_texto then
+				dialog = nil
+				if dialog_list[current_text + 1] then
+					current_text = current_text + 1 
+					dialog = dialog_list[current_text]
+					if current_text == 6 then
+						ayo.new(alphas,1,{a=0,b=1}).setEasing('inSine').onEnd(startDialog)
+					else
+						dialog.start()
+					end
+				end
+			end
+			if dialog and dialog.is_over and not ocupado_texto then
+				ayo.new(alphas,1,{dummi=1}).setEasing('inSine').onEnd(startEndDialog)
+				ocupado_texto = true
+			end
+		end
+		
+		if not dialog and not dialog_list[current_text+1] and not started_exit then
+			print('go out')
+			ayo.new(alphas,1,{b=0}).setEasing('inSine').onEnd(loadNewGame)
+			started_exit = true
+		end
+		
+	end
 
     function self.mousepressed(x, y, button)
-        if dialog.is_over then
-            dialog.startEndDialog()
-        end
+
     end
 
     function self.keyreleased( key, scancode )
