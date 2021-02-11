@@ -666,6 +666,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.static = false
     
     local max_repos_x = 0
+    local called_char_outro = false
     
     function self.center(val)
         self.center_box = val or false
@@ -723,7 +724,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     end
     
     function self.addCharacter()
-        if self.list_elements[self.next_element] then
+        if self.list_elements[self.next_element] and not self.is_over then
             if self.word_list[self.word_count][2]+1 == self.next_element then
                 --io.write(' ')
                 if self.list_elements[self.next_element].type_DLP == 'c' then
@@ -884,9 +885,23 @@ function BaseContainerDLP(user_string,x,y,size_w)
         end
     end
     
+    -- calls the outro metod of all the show characters,
+    -- stops the text, from all practical means, the text is over
+    function self.callOutro()
+        if not called_char_outro then
+            self.is_over = true
+            i = 1
+            while i < self.next_element do
+                self.list_elements[i].outro()
+                i=i+1
+            end   
+            called_char_outro = true
+        end
+    end
+    
     function self.update(dt)
         local i = 1
-        while self.list_elements[i] do
+        while self.list_elements[i] and not called_char_outro do
             if i == self.next_element-1 then
                 if self.by_word then
                     if self.list_elements[i].canCallNextWord() then

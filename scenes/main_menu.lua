@@ -21,6 +21,13 @@ function Main()
     local current_char = 0
 
     local tale_box = nil
+    
+    local alphas = {}
+    alphas.a = 0
+    alphas.b = 0
+    alphas.c = 0
+    
+    local is_text_end = false
 
     function loadCentralHub()
         --local sim_scene =  love.filesystem.load("scenes/central_hub.lua")()
@@ -84,25 +91,24 @@ function Main()
         tale_box =  BoxTextDLP(DIAL[LANG].gui_once_was_a_king,1920/2-400,
                 1080*0.3,800)
         tale_box.setAling('center')
-        tale_box.start()
+        tale_box.setMode('normal','static')
+        
+        ayo.new(alphas,1,{a=1}).setEasing('inQuint').chain(1.5,{b=1}).onEnd(tale_box.start) 
         MSC_MAIN_MENU:play()
     end
 
     function self.draw()
 
-        love.graphics.clear(0.5,0.3,0.2)
+        love.graphics.clear(0,0,0)
         love.graphics.setColor(1,1,1)
 
         local zoom = 1
         love.graphics.push()
 
-        love.graphics.setColor(0,0.4,0.1)
-        love.graphics.rectangle('fill',0,1080*0.7,1920,1080*0.3)
-
         if STATE == 0 then
             love.graphics.setShader(GAUSIAN_BLURS)
         end
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(1,1,1,alphas.a)
         love.graphics.draw(background,0,0,0,(1920/background:getWidth()),(1080/background:getHeight())  )
 
         love.graphics.setShader()
@@ -124,17 +130,17 @@ function Main()
         end
 
         if STATE == 0 then
-            love.graphics.setColor(1,1,1,self.size/8)
+            love.graphics.setColor(1,1,1,alphas.b)
             love.graphics.draw(scroll_ima,
-                1920/2-(scroll_ima:getWidth()/2)*2.6,
-                1080/2-(scroll_ima:getHeight()/2)*2.30,0,2.6,2.3)
+                1920/2-(scroll_ima:getWidth()/2)*1.2,
+                1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
         end
 
         if STATE == 2 or STATE == 3 then
-            love.graphics.setColor(1,1,1,self.size/8)
+            love.graphics.setColor(1,1,1)
             love.graphics.draw(scroll_ima,
-                1920/2-(scroll_ima:getWidth()/2)*2.6,
-                1080/2-(scroll_ima:getHeight()/2)*2.5,0,2.6,2.5)
+                1920/2-(scroll_ima:getWidth()/2)*1.2,
+                1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
 
             love.graphics.setColor(0.2,0.2,0,self.size/16)
             love.graphics.setFont(FONT_SCROLL)
@@ -153,7 +159,6 @@ function Main()
 
         if STATE == 0 then
             love.graphics.setColor(0.2,0.2,0,self.size/16)
-            
             love.graphics.setColor(0,0,0,self.size/8)
             tale_box.draw()
         end
@@ -165,10 +170,14 @@ function Main()
         if (STATE == 0 or STATE == 1)  and self.size > 0 and limpiar_fondo  then
             GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
+        tale_box.update(dt)
         if STATE == 0 then
-            tale_box.update(dt)
-            if tale_box.isEnded() then
-                flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
+            
+            if not is_text_end and tale_box.isEnded() then
+               is_text_end = true
+               --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
+                print('The table is ended...')
+                ayo.new(alphas,2,{c=1}).onEnd(tale_box.callOutro).chain(0.5,{b=0}).onEnd(limpiaFondo)
             end
         end
     end
@@ -187,7 +196,8 @@ function Main()
             end
         end
         if (STATE == 0 or STATE == 3) and not limpiar_fondo then
-            limpiaFondo()
+            tale_box.callOutro()
+            ayo.new(alphas,0.5,{b=0}).onEnd(limpiaFondo)
         end
         --[[
 

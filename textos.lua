@@ -31,7 +31,7 @@ Para ir hacia atrás no hagas nada]],
     tale_intro = {
         "Kukao, the merchant",
         "Pizu, the harvesters.",
-        "Walla, the waring.",
+        "Walla, the warring.",
         "Usay, the exalted.",
         "These four tribes of the valley lived in balance until a fateful day…",
         "A sacred artifact of the king of Usay disappeared.",

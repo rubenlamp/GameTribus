@@ -246,6 +246,9 @@ function AyouwokiEvent(obj,time,end_values)
     local save_init_values = false
     local redoing_count = 0
     local max_redoing = nil
+    
+    local is_canceled = false
+    
     --print('-----------')
     function self.setEasing(new_easing)
         if not is_set_easing then
@@ -259,6 +262,10 @@ function AyouwokiEvent(obj,time,end_values)
     
     function self.getClock()
         return current_clock
+    end
+    
+    function self.compereObj(nobj)
+        return obj == nobj
     end
     
     function self.getChained()
@@ -366,6 +373,19 @@ function AyouwokiEvent(obj,time,end_values)
             self.state(dt)
         end
     end
+    
+    function self.cancel()
+        self.state = nil
+        is_canceled = true
+        -- and just to be sure, cancel also all the chained
+        if next_event then 
+            next_event.cancel()
+        end
+    end
+    
+    function self.isCanceled()
+        return is_canceled
+    end
 
     function self.setPreviousEvent(prev)
         prev_event = prev
@@ -426,7 +446,15 @@ function AyouwokiEvent(obj,time,end_values)
     end
     
     function self.onEnd(call_function)
-        callFuntionOnEnd = call_function
+        -- function is alwas passet to the deepest definend level
+        if next_event then
+            return next_event.onEnd(call_function)
+        end
+        
+        if not callFuntionOnEnd then
+            callFuntionOnEnd = call_function
+        end
+        
         return self
     end
     
@@ -506,17 +534,22 @@ function Ayouwoki()
         while ListFuctions[i] do
             ListFuctions[i].update(dt)
             if not ListFuctions[i].isAlive() then
-                --is on reverse
-                local chained = ListFuctions[i].getChained()
-                if chained then
-                    ListFuctions[i] = chained
+                -- was canceled? 
+                if ListFuctions[i].isCanceled() then
+                    table.remove(ListFuctions,i)
                 else
-                    --is the last one
-                    if ListFuctions[i].redoingEnabled() then
-                        ListFuctions[i] = ListFuctions[i].getFirstEvent()
-                        ListFuctions[i].redoing()
+                    --is on reverse
+                    local chained = ListFuctions[i].getChained()
+                    if chained then
+                        ListFuctions[i] = chained
                     else
-                        table.remove(ListFuctions,i)
+                        --is the last one
+                        if ListFuctions[i].redoingEnabled() then
+                            ListFuctions[i] = ListFuctions[i].getFirstEvent()
+                            ListFuctions[i].redoing()
+                        else
+                            table.remove(ListFuctions,i)
+                        end
                     end
                 end
             end
@@ -527,6 +560,8 @@ function Ayouwoki()
     
     function  self.new(obj,time,args)
         --return nil -- Ayouwoki Easin Funtion
+        --check if there is already a runing 
+        
         local easing = AyouwokiEvent(obj,time,args)
         table.insert(ListFuctions,easing)
         return easing

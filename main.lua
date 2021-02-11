@@ -6,6 +6,7 @@ love.filesystem.load("libs/utf8.lua")()
 love.filesystem.load('libs/ayowoki.lua')()
 love.filesystem.load('libs/delepanto.lua')()
 love.filesystem.load('libs/boton.lua')()
+love.filesystem.load('libs/dialogo.lua')() --el dialogo requiere que definan una imagen para SCROLL_TOP_IMA, y SCROLL_BG_IMA abajo
 flux = require "libs/flux"
 ayo = Ayouwoki()
 
@@ -109,6 +110,7 @@ SCROLL_TOP_IMA = nil
 SCROLL_BG_IMA = nil
 
 
+--- Black ink on paper!!!
 function BlackBehaviour(char_dpl,font)
     --set the start values
     char_dpl.font_id_name = font
@@ -117,7 +119,10 @@ function BlackBehaviour(char_dpl,font)
     char_dpl.cred = 0
     char_dpl.cblue = 0
     char_dpl.cgreen = 0
-    
+	
+	local easing_intro = nil
+    local easing_wait = nil
+	
     char_dpl.awake = function ()
         char_dpl.alpha = 0.5
         char_dpl.x = -1
@@ -130,8 +135,7 @@ function BlackBehaviour(char_dpl,font)
     char_dpl.intro = function()
         --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
         --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        ayo.new(char_dpl,0.5,{alpha=1}).setEasing('outSine').chain(0.1,{alpha=0.8})
-        ayo.new(char_dpl,0.05,{scale=1}).onWait(char_dpl.wait)
+        easing_intro = ayo.new(char_dpl,0.05,{alpha=1, scale=0.8}).onEnd(char_dpl.wait)
     end
     
     
@@ -143,7 +147,17 @@ function BlackBehaviour(char_dpl,font)
         char_dpl.x = 0
         char_dpl.y = 0
         char_dpl.callNextTrue()
-        ayo.new(char_dpl,0.1,{scale=0.92}).chain(0.3,{scale=1})
+        easing_wait = ayo.new(char_dpl,0.5,{scale = 0.92}).setEasing('outSine').chain(0.3,{scale=1, alpha=0.8}).setEasing('inQuad')
+    end
+	
+	char_dpl.outro = function()
+		if easing_intro then
+			easing_intro.cancel()
+		end
+		if easing_wait then
+			easing_wait.cancel()
+		end
+        ayo.new(char_dpl,0.2,{alpha=0,scale= 0.1})
     end
     
     return char_dpl
