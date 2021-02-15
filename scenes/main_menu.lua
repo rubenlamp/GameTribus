@@ -43,13 +43,14 @@ function Main()
     function limpiaFondo()
         if not limpiar_fondo then
             flux.to(self,0.5,{size=0}):ease("quadout"):oncomplete(changeState)
+            ayo.new(alphas,0.5,{c=1}).setEasing('inBack')
             limpiar_fondo = true
         end
     end
 
     function ensuciaFondo()
-        STATE = 3
         limpiar_fondo = false
+        tale_box.start()
     end
 
     function loadNewGame()
@@ -127,10 +128,10 @@ function Main()
         salir.setAlpha(alphas.c,alphas.c)
         salir.draw()
         
+        love.graphics.setColor(1,1,1,alphas.c)
+        love.graphics.draw(game_title, (1920/2)-595 )
+        
         if STATE == 1 then
-            love.graphics.draw(game_title, (1920/2)-595 )
-            love.graphics.setColor(1,1,1)
-            
             newbutton.setPointerPos(globalX, globalY)
             creditos.setPointerPos(globalX, globalY)
             salir.setPointerPos(globalX, globalY)
@@ -141,10 +142,10 @@ function Main()
             1920/2-(scroll_ima:getWidth()/2)*1.2,
             1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
 
-        if STATE == 2 or STATE == 3 then
+        if STATE == 2  then
             love.graphics.setColor(0,0,0,alphas.b)
             love.graphics.setFont(FONT_SCROLL)
-            love.graphics.printf(DIAL[LANG].gui_team_name,0,1080*0.1,1920,'center')
+            love.graphics.printf(DIAL[LANG].gui_team_name,0,1080*0.2,1920,'center')
             love.graphics.setFont(FONT)
         end
         
@@ -159,9 +160,12 @@ function Main()
         if (STATE == 0 or STATE == 1)  and self.size > 0 and limpiar_fondo  then
             GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
-        tale_box.update(dt)
-        if STATE == 0 then
-            
+        
+        if tale_box then
+            tale_box.update(dt)
+        end
+        
+        if STATE == 0 or STATE == 2 then
             if not is_text_end and tale_box.isEnded() then
                is_text_end = true
                --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
@@ -170,11 +174,15 @@ function Main()
             end
         end
     end
+    
+    function quit()
+        love.event.quit()
+    end
 
     function self.mousepressed(x, y, button)
         if STATE == 1 then
             if newbutton.isPointerInside() then
-                ayo.new(alphas,0.2,{c=0}).setEasing('inBack').chain(0.3,{b=0}).onEnd(loadNewGame)
+                ayo.new(alphas,0.2,{c=0}).setEasing('outBack').chain(0.3,{a=0}).onEnd(loadNewGame)
             end
             if creditos.isPointerInside() then
                 STATE = 2
@@ -182,14 +190,15 @@ function Main()
                 1080*0.3,800)
                 tale_box.setAling('center')
                 tale_box.setMode('normal','static')
-                ayo.new(alphas,0.2,{c=0}).chain(1,{b=1}).setEasing('inBack').onEnd(tale_box.start) 
-                flux.to(self,2,{size=8}):oncomplete(ensuciaFondo)
+                ayo.new(alphas,0.5,{c=0}).setEasing('outBack').chain(0.5,{b=1}).setEasing('inSine') 
+                flux.to(self,1,{size=8}):oncomplete(ensuciaFondo)
             end
             if salir.isPointerInside() then
-                ayo.new(alphas,0.2,{c=0}).chain(0.3,{b=0}):onEnd(love.event.quit)
+                STATE = 0
+                ayo.new(alphas,0.2,{c=0}).chain(0.3,{b=0}):onEnd(quit)
             end
         end
-        if (STATE == 0 or STATE == 3) and not limpiar_fondo then
+        if STATE == 0  or STATE == 2 and not limpiar_fondo then
             tale_box.callOutro()
             easing.cancel()
             ayo.new(alphas,0.5,{b=0}).onEnd(limpiaFondo)
