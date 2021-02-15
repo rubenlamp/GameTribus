@@ -27,6 +27,8 @@ function Main()
     alphas.b = 0
     alphas.c = 0
     
+    local easing = nil
+    
     local is_text_end = false
 
     function loadCentralHub()
@@ -93,7 +95,7 @@ function Main()
         tale_box.setAling('center')
         tale_box.setMode('normal','static')
         
-        ayo.new(alphas,1,{a=1}).setEasing('inQuint').chain(1.5,{b=1}).onEnd(tale_box.start) 
+        easing = ayo.new(alphas,1,{a=1}).setEasing('inQuint').chain(1.5,{b=1}).onEnd(tale_box.start) 
         MSC_MAIN_MENU:play()
     end
 
@@ -115,54 +117,41 @@ function Main()
 
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
-
+        
+        newbutton.setAlpha(alphas.c,alphas.c)
+        newbutton.draw()
+        
+        creditos.setAlpha(alphas.c,alphas.c)
+        creditos.draw()
+        
+        salir.setAlpha(alphas.c,alphas.c)
+        salir.draw()
+        
         if STATE == 1 then
             love.graphics.draw(game_title, (1920/2)-595 )
             love.graphics.setColor(1,1,1)
+            
             newbutton.setPointerPos(globalX, globalY)
-            newbutton.draw()
-
             creditos.setPointerPos(globalX, globalY)
-            creditos.draw()
-
             salir.setPointerPos(globalX, globalY)
-            salir.draw()
         end
 
-        if STATE == 0 then
-            love.graphics.setColor(1,1,1,alphas.b)
-            love.graphics.draw(scroll_ima,
-                1920/2-(scroll_ima:getWidth()/2)*1.2,
-                1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
-        end
+        love.graphics.setColor(1,1,1,alphas.b)
+        love.graphics.draw(scroll_ima,
+            1920/2-(scroll_ima:getWidth()/2)*1.2,
+            1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
 
         if STATE == 2 or STATE == 3 then
-            love.graphics.setColor(1,1,1)
-            love.graphics.draw(scroll_ima,
-                1920/2-(scroll_ima:getWidth()/2)*1.2,
-                1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
-
-            love.graphics.setColor(0.2,0.2,0,self.size/16)
+            love.graphics.setColor(0,0,0,alphas.b)
             love.graphics.setFont(FONT_SCROLL)
-            love.graphics.printf(DIAL[LANG].gui_team_name,3,1080*0.1+3,1920,'center')
-            love.graphics.setFont(FONT_SCROLL_SMALL)
-            love.graphics.printf(DIAL[LANG].gui_creditos_full,2,1080*0.18+2,1920,'center')
-            love.graphics.setFont(FONT_SCROLL)
-
-            love.graphics.setColor(0,0,0,self.size/8)
-
             love.graphics.printf(DIAL[LANG].gui_team_name,0,1080*0.1,1920,'center')
-            love.graphics.setFont(FONT_SCROLL_SMALL)
-            love.graphics.printf(DIAL[LANG].gui_creditos_full,0,1080*0.18,1920,'center')
             love.graphics.setFont(FONT)
         end
-
-        if STATE == 0 then
-            love.graphics.setColor(0.2,0.2,0,self.size/16)
-            love.graphics.setColor(0,0,0,self.size/8)
+        
+        if tale_box then
             tale_box.draw()
         end
-
+        
         love.graphics.pop()
     end
 
@@ -177,7 +166,7 @@ function Main()
                is_text_end = true
                --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
                 print('The table is ended...')
-                ayo.new(alphas,2,{c=1}).onEnd(tale_box.callOutro).chain(0.5,{b=0}).onEnd(limpiaFondo)
+                ayo.new(alphas,0.5,{b=0, c=1}).delay(1.2).onStart(tale_box.callOutro).onEnd(tale_box.callOutro).onEnd(limpiaFondo)
             end
         end
     end
@@ -185,18 +174,24 @@ function Main()
     function self.mousepressed(x, y, button)
         if STATE == 1 then
             if newbutton.isPointerInside() then
-                loadNewGame()
+                ayo.new(alphas,0.2,{c=0}).setEasing('inBack').chain(0.3,{b=0}).onEnd(loadNewGame)
             end
             if creditos.isPointerInside() then
                 STATE = 2
+                tale_box =  BoxTextDLP(DIAL[LANG].gui_creditos_full,1920/2-400,
+                1080*0.3,800)
+                tale_box.setAling('center')
+                tale_box.setMode('normal','static')
+                ayo.new(alphas,0.2,{c=0}).chain(1,{b=1}).setEasing('inBack').onEnd(tale_box.start) 
                 flux.to(self,2,{size=8}):oncomplete(ensuciaFondo)
             end
             if salir.isPointerInside() then
-                love.event.quit()
+                ayo.new(alphas,0.2,{c=0}).chain(0.3,{b=0}):onEnd(love.event.quit)
             end
         end
         if (STATE == 0 or STATE == 3) and not limpiar_fondo then
             tale_box.callOutro()
+            easing.cancel()
             ayo.new(alphas,0.5,{b=0}).onEnd(limpiaFondo)
         end
         --[[

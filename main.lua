@@ -135,7 +135,7 @@ function BlackBehaviour(char_dpl,font)
     char_dpl.intro = function()
         --ayo.new(char_dpl,0.5,{alpha=1,x=0,y=0}).setEasing('outSine')
         --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
-        easing_intro = ayo.new(char_dpl,0.05,{alpha=1, scale=0.8}).onEnd(char_dpl.wait)
+        easing_intro = ayo.new(char_dpl,0.05,{alpha=1, scale=1.2}).onEnd(char_dpl.wait)
     end
     
     
@@ -174,9 +174,9 @@ function love.load()
     DRAW_TIMER.iniciar()
     
     --we set the canvas size to be a quarter of the size of the window
-    love.graphics.setDefaultFilter("nearest", "nearest")
+    --love.graphics.setDefaultFilter("nearest", "nearest")
     CANVAS = love.graphics.newCanvas(base_win_size_w,base_win_size_h)
-    CANVAS:setFilter("nearest", "nearest")
+    --CANVAS:setFilter("nearest", "nearest")
 	
 	FONT_SCROLL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',80)
 	FONT_SCROLL_SMALL = love.graphics.newFont('/rcs/fonts/Old Story Bold.ttf',60)
@@ -187,6 +187,7 @@ function love.load()
 	love.graphics.setFont(FONT)
 	
 	loadNewFontDLP('regular','/rcs/fonts/Old Story Bold.ttf',60,BlackBehaviour)
+	setFontFallback('regular')
 
     --CURSOR = Cursor()
 	MSC_MAIN_MENU = love.audio.newSource('/rcs/music/menu.mp3','stream', true)

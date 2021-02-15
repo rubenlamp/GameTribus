@@ -7,7 +7,7 @@ DIAL['ES'] = {
     gui_new_game = 'Juego Nuevo',
     gui_creditos = 'Créditos',
     gui_team_name = 'TEAM LOS THINKING',
-    gui_creditos_full = 'Mildred Ham\n\nEduardo Fierro\n\nRuben Azael Martínez Lozada\n\nPablo Rodríguez\n\nCristian Valerio\n\nPaulina Marín\n\nOsvaldo Barajas Fierros',
+    gui_creditos_full = 'Mildred Ham{br}Eduardo Fierro{br}Ruben Azael Martínez Lozada{br}Pablo Rodríguez{br}Cristian Valerio{br}Paulina Marín{br}Osvaldo Barajas Fierros',
     gui_exit = 'Salir',
     gui_ready = '¿Estas listo?',
     gui_return = 'Regresar',
@@ -29,10 +29,10 @@ Para ir hacia atrás no hagas nada]],
     gui_derrota_final = 'Al final el rey perdió todo lo que tenía',
     
     tale_intro = {
-        "Kukao, the merchant",
-        "Pizu, the harvesters.",
-        "Walla, the warring.",
-        "Usay, the exalted.",
+        "Kukao{br}The merchant",
+        "Pizu{br}The harvesters.",
+        "Walla{br}The warring.",
+        "Usay{br}the exalted.",
         "These four tribes of the valley lived in balance until a fateful day…",
         "A sacred artifact of the king of Usay disappeared.",
         "Wrathful, he sworn to uncover the culprit across the valley."

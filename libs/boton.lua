@@ -30,6 +30,11 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
         px = x
         py = y
     end
+    
+    function self.setAlpha(normal, hover)
+        self.rgba_hover[4] = hover
+        self.rgba[4] = normal
+    end
 
     function self.isPointerInside()
         if px < self.pos.x+(self.w-self.mw) and py < self.pos.y+(self.h-self.mh) then
@@ -88,10 +93,10 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
                 love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
             else
                 if inside then
-                    love.graphics.setColor(1,1,1)
+                    love.graphics.setColor(1,1,1,rgb_a_bg[4])
                     love.graphics.draw(bg_ima_hover,self.pos.x-self.mw,self.pos.y-self.mh)
                 else
-                    love.graphics.setColor(0.8,0.8,0.8)
+                    love.graphics.setColor(0.8,0.8,0.8,rgb_a_bg[4])
                     love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
                 end
             end

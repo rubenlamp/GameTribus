@@ -37,8 +37,6 @@ function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
     local char_name_w  = char_name_font:getWidth(char_name or '')+10
     local char_name_h = char_name_font:getHeight()
     
-	
-	
 	local end_px = prc_x
 	local end_py = prc_y
 	
@@ -91,7 +89,11 @@ function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
     
     function self.startEndDialog()
         if not end_dialog_started then
-            ayo.new(rect, 1, {offset_bottom = ((113)/math.floor(self.last_y+self.line_height)), w=0, h=0, x=end_px, y=end_py }).setEasing('outQuint').onEnd(self.endDialog)
+			self.callOutro()
+            ayo.new(rect,0.5, 
+				{offset_bottom = ((108)/math.floor(self.last_y+self.line_height))})
+				.setEasing('inQuint')
+				.chain(0.2, { w=0, h=0, x=end_px, y=end_py}).setEasing('inSine').onEnd(self.endDialog)
             end_dialog_started = true
         end
     end
@@ -158,10 +160,7 @@ function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
 		
 		love.graphics.draw(scroll_bg,quad_scroll,scroll_x,scroll_y,0,scroll_scale_x,1)
 
-        if not end_dialog_started then
-            --self.next_element if from the base DLP
-            self.draw_text()
-        end
+        self.draw_text()
 		
 		love.graphics.setColor(1,1,1,rect.h)
 		love.graphics.draw(scroll_top,scroll_x,scroll_y+math.floor(self.last_y+self.line_height)*rect.offset_bottom,0,scroll_scale_x,-1)

@@ -1,7 +1,7 @@
 --[[
 Delepanto - Una libreria para manejar texto.
 requires ayouwoki
-ver: 20210208
+ver: 20210214
 ]]
 local DPL_FontList = {}
 CharBehaviour = nil
@@ -26,8 +26,17 @@ function simpleLoadFontDPL(font_name,font_dir,font_size,behaviour,loaded_font)
     DPL_FontList[font_name].font = loaded_font
 end
 
+function setFontFallback(font_name, fallback_font_dir)
+    local font_size = DPL_FontList[font_name].size 
+    local ok, loaded_font = pcall(love.graphics.newFont,fallback_font_dir,font_size,'normal')
+    if not ok then
+        loaded_font = love.graphics.getFont(font_size)
+    end
+    DPL_FontList[font_name].font:setFallbacks(loaded_font)
+end
+
 function loadNewFontDLP(font_name,font_dir,font_size,behaviour)
-    local ok, loaded_font = pcall(love.graphics.newFont,font_dir,font_size,'light')
+    local ok, loaded_font = pcall(love.graphics.newFont,font_dir,font_size,'normal')
     if not ok then
         loaded_font = love.graphics.getFont(font_size)
     end
@@ -170,6 +179,16 @@ local function ControlBreakLineDPL(font)
     self.font_id_name = font
     function self.getWidth()
         return -1
+    end
+    
+    function self.draw()
+        local w = math.floor( DPL_FontList[self.font_id_name].font:getWidth(self.text)/2)
+        local h = math.floor( DPL_FontList[self.font_id_name].font:getAscent( )/2)
+        local minus_h =  DPL_FontList[self.font_id_name].font:getDescent( )
+        love.graphics.setColor(0,0,0)
+        love.graphics.print('█',
+            self.gx+self.lx+self.x+w-self.aling,self.gy+self.ly+self.y-h,
+            self.angle,self.scale,self.scale,w,h)
     end
     
     return self
@@ -516,6 +535,7 @@ function wordBreakBox(max_pixel_size,text)
         local cbreak = 1
         while word_list[i] do
             local size = word_list[i][1]
+            local val = 0
             if size < 0 then
                 if character_list[word_list[i][2]].type_DLP == 'br' then
                     if n> 0 and (max_size-val-n)> 0 then
@@ -653,6 +673,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.ry = 0
     self.last_y = self.repos.y+(self.line_height*0.5)
     self.last_x = 0
+    self.break_number = 0
     
     self.next_element = 1
     self.word_count = 1
@@ -664,6 +685,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     self.center_box = false
     self.by_word = false
     self.static = false
+    
     
     local max_repos_x = 0
     local called_char_outro = false
@@ -739,14 +761,24 @@ function BaseContainerDLP(user_string,x,y,size_w)
                 end
             end
             
-            
-            
             -- revisamos en la lista de break si alcanzamos el punto de quiebre
             -- si lo alcanzamos, entonces fijamos el proximo punto de quiebre
             -- en el valor guardado
             if (self.word_count) == self.line_breaks[self.cbreak_index] then
                 self.cbreak_index = self.line_breaks[self.cbreak_index]
-                self.repos.y = self.repos.y+self.line_height
+                local is_line_break = (self.list_elements[self.next_element].type_DLP == 'br')
+                if is_line_break then
+                    -- break is just an invisible word that cover the whole rectangle
+                    -- so just ignore the first one
+                    if self.break_number > 0 then
+                        self.repos.y = self.repos.y+self.line_height
+                    end
+                    self.break_number = self.break_number + 1
+                else
+                    self.break_number = 0 --reset the number of line breaks
+                    self.repos.y = self.repos.y+self.line_height
+                end
+                
                 self.repos.x = 0
                 max_repos_x = 0
                 self.index_of_break = self.next_element
