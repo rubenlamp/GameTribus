@@ -289,7 +289,7 @@ function Main()
                     love.graphics.newImage("/rcs/gui/back.png"),
                     love.graphics.newImage("/rcs/gui/hover_back.png"))
         
-        background = love.graphics.newImage('/rcs/img/minijuego_background.png')
+        background = MINIGAME_BG_IMA
         
         -- pon lo a la mitad horizonta, a 40% vertical, 40x20 px, rango de 25% a 75% horizontal
         target = Target(1920/2,1080*0.4,40,20,1920*0.25,1920*0.75)

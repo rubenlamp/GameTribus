@@ -200,8 +200,20 @@ function love.load()
 	MSC_TRB_GUERRERA = love.audio.newSource('/rcs/music/tribu_guerrera.mp3','stream', true)
 	MSC_TRB_PACIFICA = love.audio.newSource('/rcs/music/tribu_pacifica.mp3','stream', true)
 	
+	MSC_MAIN_MENU:setLooping(true)
+	MSC_MAP_MENU:setLooping(true)
+	MSC_ATACK:setLooping(true)
+	MSC_DIPLOMACIA:setLooping(true)
+	MSC_DERROTA:setLooping(true)
+	MSC_EXITO:setLooping(true)
+	MSC_TRB_MERCANTE:setLooping(true)
+	MSC_TRB_GUERRERA:setLooping(true)
+	MSC_TRB_PACIFICA:setLooping(true)
+	
 	SCROLL_TOP_IMA = love.graphics.newImage("/rcs/img/scroll_head.png")
 	SCROLL_BG_IMA = love.graphics.newImage("/rcs/img/scroll_body.png")
+	MINIGAME_BG_IMA = love.graphics.newImage('/rcs/img/minijuego_background.png')
+	
 	
 	GAUSIAN_BLURS = love.graphics.newShader[[
 	// This is a reimplementation of some code I found in shadertoy   

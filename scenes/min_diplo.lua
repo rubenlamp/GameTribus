@@ -562,7 +562,7 @@ function Main()
     function self.load(settings)
         tribu_id = settings[1]
         
-        background = love.graphics.newImage('/rcs/img/minijuego_background.png')
+        background = MINIGAME_BG_IMA
         
         newbutton = Boton('',1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,

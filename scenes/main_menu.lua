@@ -170,12 +170,13 @@ function Main()
                is_text_end = true
                --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
                 print('The table is ended...')
-                ayo.new(alphas,0.5,{b=0, c=1}).delay(1.2).onStart(tale_box.callOutro).onEnd(tale_box.callOutro).onEnd(limpiaFondo)
+                ayo.new(alphas,0.5,{b=0, c=1}).delay(1.2).setEasing('outBack').onStart(tale_box.callOutro).onEnd(limpiaFondo)
             end
         end
     end
     
-    function quit()
+    function quitGame()
+        print('Exit game...')
         love.event.quit()
     end
 
@@ -195,7 +196,7 @@ function Main()
             end
             if salir.isPointerInside() then
                 STATE = 0
-                ayo.new(alphas,0.2,{c=0}).chain(0.3,{b=0}):onEnd(quit)
+                ayo.new(alphas,0.2,{c=0}).chain(0.3,{b=0,a=0}).onEnd(quitGame)
             end
         end
         if STATE == 0  or STATE == 2 and not limpiar_fondo then

@@ -1,9 +1,9 @@
-LANG = 'ES'
+LANG = 'EN'
 DIAL = {}
-DIAL['ES'] = {
+DIAL['EN'] = {
     --// definimos nombres de as cosas...
     game_name = 'B E F O R E ~ L O S I N G',
-    gui_once_was_a_king = 'Una vez existió un rey bastante distraido y torpe, quien perdió algo muy importante y que estaba dispuesto a cualquier cosa para recuperarlo',
+    gui_once_was_a_king = 'Once upon a time, there was a rather distracted and clumsy king, who lost something very important to him{br}and was willing to do anything to get it back.',
     gui_new_game = 'Juego Nuevo',
     gui_creditos = 'Créditos',
     gui_team_name = 'TEAM LOS THINKING',
@@ -35,7 +35,7 @@ Para ir hacia atrás no hagas nada]],
         "Usay{br}the exalted.",
         "These four tribes of the valley lived in balance until a fateful day…",
         "A sacred artifact of the king of Usay disappeared.",
-        "Wrathful, he sworn to uncover the culprit across the valley."
+        "Wrathful, he sworn to uncover the culprit."
     },
     
     tale_won = {
@@ -47,8 +47,8 @@ Para ir hacia atrás no hagas nada]],
         },
     
     gui_choose_status = {
-        'A sacred artifact of the king of Usay has disappeared. Wrathful, he has sworn to uncover the culprit across the valley.',
-        'The king of the Usay’s patience grows thin with each passing day. The artefact must be found soon.',
+        'Whoever taked it{br}must be found among the tribes of this valley.',
+        'The king of the Usay’s impatience grows thin with each passing day. The artifact must be found soon.',
         'One tribe was left to contact. The traitors would soon be uncovered…'
         },
     

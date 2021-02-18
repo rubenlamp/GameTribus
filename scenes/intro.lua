@@ -6,11 +6,13 @@ function Main()
     local STATE = 0
 	
     local limpiar_fondo = false
-	local started_exit = false
+	
     self.size = 8
 	
     local current_text = 1
     local ocupado_texto = false
+	local started_exit = false
+	local user_exit = false
     
     local dialog = nil
 	local dialog_list = {}
@@ -156,6 +158,11 @@ function Main()
     end
 
     function self.keypressed(key,scancode)
+		if key == 'space' and not started_exit then
+			startEndDialog()
+			ayo.new(alphas,1.5,{a=0,b=0}).setEasing('inSine').onEnd(loadNewGame)
+			started_exit = true
+		end
         --mi_menu.keypressed(scancode)
     end
 

@@ -557,7 +557,6 @@ function Ayouwoki()
         end
     end
     
-    
     function  self.new(obj,time,args)
         --return nil -- Ayouwoki Easin Funtion
         --check if there is already a runing 

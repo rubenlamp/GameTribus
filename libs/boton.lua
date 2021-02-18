@@ -86,9 +86,9 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
         else
             local inside = self.isPointerInside()
             if not bg_ima_hover then
-                love.graphics.setColor(0.8,0.8,0.8)
+                love.graphics.setColor(0.8,0.8,0.8,rgb_a_bg[4])
                 if inside then
-                    love.graphics.setColor(1,1,1)
+                    love.graphics.setColor(1,1,1,rgb_a_bg[4])
                 end
                 love.graphics.draw(bg_ima,self.pos.x-self.mw,self.pos.y-self.mh)
             else
