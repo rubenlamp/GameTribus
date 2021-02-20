@@ -35,6 +35,7 @@ function Main()
     alphas.c = 0
     
     local start_dialog = nil
+    local king_dialog = nil
     
     local time_out_move = false
 
@@ -181,18 +182,6 @@ function Main()
                 boton_diplom.setPointerPos(globalX, globalY)
                 boton_diplom.draw()
             end
-            if TRIBUS[working_id] == 0 then
-                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].neutral[neutral_id],
-                    1920*1.5,1080*0.05,1920*0.5,'center')
-            end
-            if TRIBUS[working_id]==1  or TRIBUS[working_id]==2 then
-                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].btl_won,
-                    1920*1.5,1080*0.05,1920*0.5,'center')
-            end
-            if TRIBUS[working_id]==3 or TRIBUS[working_id]==4 then
-                love.graphics.printf(DIAL[LANG].gui_tribus[working_id].diag_won,
-                    1920*1.5,1080*0.05,1920*0.5,'center')
-            end
             love.graphics.setFont(FONT)
             
             boton_go_back.setPointerPos(globalX, globalY)
@@ -232,6 +221,10 @@ function Main()
             --love.graphics.printf(DIAL[LANG].gui_choose_status[neutral_id],1920/2-400,1080*0.05,800,'center')
             
             start_dialog.draw()
+            if king_dialog then
+                king_dialog.draw()
+            end
+            
         end
         
         
@@ -265,6 +258,10 @@ function Main()
     function self.update(dt)
         
         start_dialog.update(dt)
+        
+        if king_dialog then
+            king_dialog.update(dt)
+        end
         
         if working_id >= 0  then
             if state == 1 then
@@ -317,6 +314,20 @@ function Main()
                         if working_id == 2 then
                             MSC_TRB_GUERRERA:play()
                         end
+                        
+                        local king_dialog_text = ''
+                        if TRIBUS[working_id] == 0 then
+                            king_dialog_text = DIAL[LANG].gui_tribus[working_id].neutral[neutral_id]
+                        end
+                        if TRIBUS[working_id]==1  or TRIBUS[working_id]==2 then
+                            king_dialog_text = DIAL[LANG].gui_tribus[working_id].btl_won
+                        end
+                        if TRIBUS[working_id]==3 or TRIBUS[working_id]==4 then
+                            king_dialog_text = DIAL[LANG].gui_tribus[working_id].diag_won
+                        end
+                        
+                        king_dialog = DialogBox(nil,king_dialog_text,550,1.5,0.08)
+                        king_dialog.start()
                         --state = 2
                         break
                     end
@@ -326,6 +337,9 @@ function Main()
             if state == 2 then
                 if boton_go_back.isPointerInside() then
                     flux.to(self,1,{cam_x = 0}):oncomplete(function() state = 3 end)
+                    if king_dialog then
+                        king_dialog.startEndDialog()
+                    end
                 end
                 if boton_diplom.isPointerInside() then
                     self.goToDiplomMini()

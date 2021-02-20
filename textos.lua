@@ -61,9 +61,9 @@ Para ir hacia atrás no hagas nada]],
             --diag_lost = 'No hay nada más que discutir',
             diag_won = 'I’m afraid we are of little use finding your artifact, perhaps there is no need to pursue its location, my brother. Search it’s power within you.',
             neutral = {
-                'The Pizu grand chief warmly welcomes you.\n“Welcome and blessings! To what do we owe your visit?”',
-                'The Pizu grand chief stands behind their small army.\n“Bloodshed is unnecessary. Speak your purpose.”',
-                'The Pizu grand chief stands before you, passive.\n“I sense great frustration within you…”'
+                'The Pizu grand chief warmly welcomes you.{br}“Welcome and blessings! To what do we owe your visit?”',
+                'The Pizu grand chief stands behind their small army.{br}“Bloodshed is unnecessary. Speak your purpose.”',
+                'The Pizu grand chief stands before you, passive.{br}“I sense great frustration within you…”'
                 }
         },
         [1] = {
