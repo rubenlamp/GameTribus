@@ -163,19 +163,18 @@ function Main()
         love.graphics.draw(back_ground,0,0,0,(1920/back_ground:getWidth()),(1080/back_ground:getHeight())  )
         love.graphics.draw(bg_minigame,1920,0,0,(1920/back_ground:getWidth()),(1080/back_ground:getHeight())  )
         --love.graphics.setShader()
+        
+        love.graphics.setColor(1,1,1)
+            love.graphics.draw(rey_img,
+                1920*1.25-(rey_img:getWidth()/2)*0.75,0,0,-0.75,0.75)
+            
+                --love.graphics.scale(2,2)
 
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
 
-        -- Dibujar toda la pantalla donde vez al resto de los jefes de las tribus
         if state <= 3 then
-            -- Dibujar al rey  
-        	love.graphics.setColor(1,1,1)
-            love.graphics.draw(rey_img,
-                1920+(rey_img:getWidth())*0.75,0,0,-0.75,0.75)
- 		    
-            -- Aqui se dibujan los botones donde escoges con cual aldea interactuar
-			local i = 0
+            local i = 0
             while aldea_list[i] do
                 aldea_list[i].setPointerPos(globalX, globalY)
                 aldea_list[i].setAlpha(alphas.a,alphas.a)
@@ -185,34 +184,32 @@ function Main()
              
             if kings_list[working_id] then
                 love.graphics.draw(kings_list[working_id],
-                    1919*1.85-(kings_list[working_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
+                    1919*1.85-(kings_list[working_id]:getWidth()/2)*0.75,0,0,0.75,0.75  )
             end
             
             start_dialog.draw()
             if king_dialog then
                 king_dialog.draw()
             end
-		    
-            -- Dibujar los botones de decision.
-			if state == 2 then
-			    love.graphics.setColor(1,1,1)
-                -- El estado de estos botones depende si el jugador ya a interacutado con esta tribu			
-                if TRIBUS[working_id]==0 then
-                    boton_atacar.setPointerPos(globalX, globalY)
-                    boton_atacar.draw()
-
-                    boton_diplom.setPointerPos(globalX, globalY)
-                    boton_diplom.draw()
-                end
-			
-			    boton_go_back.setPointerPos(globalX, globalY)
-			    boton_go_back.draw()
-			end
-
+            
         end
 
         --love.graphics.print('Escoge una aldea para hacer algo...')
-       
+        if state == 2 then
+            love.graphics.setColor(1,1,1)
+            
+            if TRIBUS[working_id]==0 then
+                boton_atacar.setPointerPos(globalX, globalY)
+                boton_atacar.draw()
+
+                boton_diplom.setPointerPos(globalX, globalY)
+                boton_diplom.draw()
+            end
+            
+            boton_go_back.setPointerPos(globalX, globalY)
+            boton_go_back.draw()
+
+        end
 
         if state >= 4 then
             love.graphics.setColor(1,1,1,1)

@@ -95,7 +95,7 @@ function Main()
         local zoom = 1
         love.graphics.push()
         
-        love.graphics.setShader(GAUSIAN_BLURS)
+        --love.graphics.setShader(GAUSIAN_BLURS)
         
 		love.graphics.setColor(1,1,1,alphas.a)
         love.graphics.draw(background[1],0,0,0,
@@ -104,7 +104,7 @@ function Main()
 		love.graphics.draw(background[2],0,0,0,
             (1920/background[2]:getWidth()),(1080/background[1]:getHeight())  )
 		
-        love.graphics.setShader()
+        --love.graphics.setShader()
 		
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
@@ -117,7 +117,7 @@ function Main()
     end
 
     function self.update(dt)
-        GAUSIAN_BLURS:send("Size", math.floor(self.size) )
+        --GAUSIAN_BLURS:send("Size", math.floor(self.size) )
 		
         
 		if dialog then

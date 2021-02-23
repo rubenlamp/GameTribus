@@ -109,12 +109,12 @@ function Main()
         love.graphics.push()
 
         if STATE == 0 then
-            love.graphics.setShader(GAUSIAN_BLURS)
+            --love.graphics.setShader(GAUSIAN_BLURS)
         end
         love.graphics.setColor(1,1,1,alphas.a)
         love.graphics.draw(background,0,0,0,(1920/background:getWidth()),(1080/background:getHeight())  )
 
-        love.graphics.setShader()
+        --love.graphics.setShader()
 
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
@@ -158,7 +158,7 @@ function Main()
 
     function self.update(dt)
         if (STATE == 0 or STATE == 1)  and self.size > 0 and limpiar_fondo  then
-            GAUSIAN_BLURS:send("Size", math.floor(self.size) )
+            -- GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
         
         if tale_box then
@@ -170,7 +170,7 @@ function Main()
                is_text_end = true
                --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
                 print('The table is ended...')
-                ayo.new(alphas,0.5,{b=0, c=1}).delay(1.2).setEasing('outBack').onStart(tale_box.callOutro).onEnd(limpiaFondo)
+                ayo.new(alphas,1.25,{b=0, c=1}).delay(1.2).setEasing('outBack').onStart(tale_box.callOutro).onEnd(limpiaFondo)
             end
         end
     end
