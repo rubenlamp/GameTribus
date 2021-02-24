@@ -108,8 +108,8 @@ FONT_SCROLL = nil
 
 SCROLL_TOP_IMA = nil
 SCROLL_BG_IMA = nil
-
-
+KINGS_IMG_LIST = {}
+KING_IMG = nil
 --- Black ink on paper!!!
 function BlackBehaviour(char_dpl,font)
     --set the start values
@@ -137,8 +137,6 @@ function BlackBehaviour(char_dpl,font)
         --ayo.new(char_dpl,0.075,{scale=1}).setEasing('inQuad').onWait(char_dpl.wait)
         easing_intro = ayo.new(char_dpl,0.05,{alpha=1, scale=1.2}).onEnd(char_dpl.wait)
     end
-    
-    
     
    char_dpl.wait = function()
         --print('call next')
@@ -213,7 +211,11 @@ function love.load()
 	SCROLL_TOP_IMA = love.graphics.newImage("/rcs/img/scroll_head.png")
 	SCROLL_BG_IMA = love.graphics.newImage("/rcs/img/scroll_body.png")
 	MINIGAME_BG_IMA = love.graphics.newImage('/rcs/img/minijuego_background.png')
-	
+	KINGS_IMG_LIST[0] = love.graphics.newImage("/rcs/img/rey_circulo.png")
+    KINGS_IMG_LIST[1] = love.graphics.newImage("/rcs/img/rey_cuadrado.png")
+    KINGS_IMG_LIST[2] = love.graphics.newImage("/rcs/img/rey_triangulo.png")
+    KING_IMG = love.graphics.newImage("/rcs/img/rey_jugador.png")
+
 	
 	GAUSIAN_BLURS = love.graphics.newShader[[
 	// This is a reimplementation of some code I found in shadertoy   
@@ -241,10 +243,10 @@ function love.load()
 		return texturecolor*color;
 	}
   ]]
-   local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
    --local init_scene =  love.filesystem.load("scenes/intro.lua")()
-   --local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
-   SCENA_MANAGER.push(init_scene)
+   local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
+   SCENA_MANAGER.push(init_scene,{1})
 end
 
 

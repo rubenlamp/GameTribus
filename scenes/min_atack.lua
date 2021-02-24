@@ -259,6 +259,8 @@ function Main()
     
     local STATE = 0 -- No gastarted 
     local tribu_id = 0
+    local kings_list = {}
+    local rey_img = nil
     
     local function goToHub()
         MSC_ATACK:stop()
@@ -279,6 +281,9 @@ function Main()
 
     function self.load(settings)
         tribu_id = settings[1]
+        
+        kings_list = KINGS_IMG_LIST
+        rey_img = KING_IMG        
         
         newbutton = Boton('',1920/2,1080*0.92,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
@@ -307,46 +312,45 @@ function Main()
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
         
-            love.graphics.setShader(GAUSIAN_BLURS)
-            love.graphics.setColor(1,1,1)
-            love.graphics.draw(background)
-            love.graphics.setShader()
-            
-            love.graphics.setColor(1,1,1)
-            
-            control.draw()
-            target.draw()
-            
-            --love.graphics.setShader()
-            
-            love.graphics.setColor(1,1,1)
-            love.graphics.setFont(FONT_SCROLL_SMALL)
-            love.graphics.printf(DIAL[LANG].gui_atk_inst,0,0,1920,'center')
-            love.graphics.setFont(FONT )
-            
-            if STATE == 0 then
-                --love.graphics.setShader(GAUSIAN_BLURS)
-                --cuadrado.drawStandBy()
-                --love.graphics.setShader()
-                newbutton.setPointerPos(globalX, globalY)
-                newbutton.draw()
-            end
-            
-            if STATE == 1 then
-                estado_batalla.draw()
-            end
-            
-            love.graphics.setColor(0,0,0)
-            if STATE == 3 then
-                love.graphics.printf(DIAL[LANG].gui_atk_is_fail,0,1080*0.65,1920,'center')
-                go_back_button.setPointerPos(globalX, globalY)
-                go_back_button.draw()
-            end
-            if STATE == 4 then
-                love.graphics.printf(DIAL[LANG].gui_atk_is_susses,0,1080*0.65,1920,'center')
-                go_back_button.setPointerPos(globalX, globalY)
-                go_back_button.draw()
-            end
+        love.graphics.draw(background)
+        
+        love.graphics.setColor(1,1,1,0.8)
+        
+        love.graphics.draw(kings_list[tribu_id],
+            1920*0.86-(kings_list[tribu_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
+        
+        love.graphics.draw(rey_img,rey_img:getWidth()*0.75,0,0,-0.75,0.75)
+        
+        love.graphics.setColor(1,1,1)
+
+        control.draw()
+        target.draw()
+        
+        love.graphics.setColor(1,1,1)
+        love.graphics.setFont(FONT_SCROLL_SMALL)
+        love.graphics.printf(DIAL[LANG].gui_atk_inst,0,0,1920,'center')
+        love.graphics.setFont(FONT )
+        
+        if STATE == 0 then
+            newbutton.setPointerPos(globalX, globalY)
+            newbutton.draw()
+        end
+        
+        if STATE == 1 then
+            estado_batalla.draw()
+        end
+        
+        love.graphics.setColor(0,0,0)
+        if STATE == 3 then
+            love.graphics.printf(DIAL[LANG].gui_atk_is_fail,0,1080*0.65,1920,'center')
+            go_back_button.setPointerPos(globalX, globalY)
+            go_back_button.draw()
+        end
+        if STATE == 4 then
+            love.graphics.printf(DIAL[LANG].gui_atk_is_susses,0,1080*0.65,1920,'center')
+            go_back_button.setPointerPos(globalX, globalY)
+            go_back_button.draw()
+        end
             
         love.graphics.pop()
     end

@@ -45,12 +45,8 @@ function Main()
         aldea_list[1] = Boton('',480,315,100,100,love.graphics.newImage("/rcs/img/aldea_cuadrado_normal.png"))
         aldea_list[2] = Boton('',370,730,500,500,love.graphics.newImage("/rcs/img/aldea_triangulo_normal.png"))
 
-        kings_list[0] = love.graphics.newImage("/rcs/img/rey_circulo.png")
-        kings_list[1] = love.graphics.newImage("/rcs/img/rey_cuadrado.png")
-        kings_list[2] = love.graphics.newImage("/rcs/img/rey_triangulo.png")
-
-        rey_img = love.graphics.newImage("/rcs/img/rey_jugador.png")
-        
+        kings_list = KINGS_IMG_LIST
+        rey_img = KING_IMG        
         local boton_bg = nil -- love.graphics.newImage("/rcs/img/gui_boton_opcion.png")
         --[[
         DIAL[LANG].gui_opt_atk
@@ -101,7 +97,6 @@ function Main()
                 back_ground = love.graphics.newImage("/rcs/scenes/rey_derrota.png")
                 tale_box =  BoxTextDLP(tell, 1920/2-400, 1080*0.1, 800)
             end
-            
             scroll_ima = love.graphics.newImage("/rcs/img/Scroll.png")
             
             tale_box.setAling('center')
@@ -110,7 +105,7 @@ function Main()
             back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
         end
         
-        start_dialog = DialogBox(nil,DIAL[LANG].gui_choose_status[neutral_id],400,0.8,0.08)
+        start_dialog = DialogBox(nil,DIAL[LANG].gui_choose_status[neutral_id],550,0.8,0.08)
         start_dialog.start()
         
         ayo.new(alphas,1,{a=1}).setEasing('inQuint')
@@ -185,7 +180,7 @@ function Main()
              
             if kings_list[working_id] then
                 love.graphics.draw(kings_list[working_id],
-                    1919*1.85-(kings_list[working_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
+                    1920*1.86-(kings_list[working_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
             end
             
             start_dialog.draw()
@@ -202,8 +197,7 @@ function Main()
                     boton_atacar.draw()
 
                     boton_diplom.setPointerPos(globalX, globalY)
-                    boton_diplom.draw()
-                end
+                    boton_diplom.draw() end
 			
 			    boton_go_back.setPointerPos(globalX, globalY)
 			    boton_go_back.draw()

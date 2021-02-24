@@ -18,11 +18,11 @@ DIAL['EN'] = {
     gui_dial_is_fail = 'Esas clases de retorica te estafaron.\n~ FRACASO ~ ',
     gui_dial_inst = 'Mueve los números al interior para completar el cuadrado magico',
     gui_dial_sum = 'Cada lado debe sumar ',
-    gui_battle_gonna = '¡La batalla esta por comenzar!',
+    gui_battle_gonna = 'The battle is about to start',
     gui_atk_inst =
-[[Manten el círculo dentro del rectángulo.
-Para mover hacia adelante da click varias veces.
-Para ir hacia atrás no hagas nada]],
+[[Keept the green circle inside the gray rectanlge.
+To move the gray rectangle forward just click repeatly.
+To move it back, just stop clicking and wait]],
     gui_atk_is_susses = 'No somos machos, ¡Pero sí somos muchos!\n~ EXITO ~',
     gui_atk_is_fail = 'Nunca ataques con el estómago vacio\n~ FRACASO ~ ',
     gui_victoria_final = 'Y el rey se regocijó al poder finalmente encontrar su mantita',

@@ -17,9 +17,9 @@ function Boton(text,x,y,w,h,bg_ima,bg_ima_hover)
     self.mh = math.floor(self.h/2)
 
     self.rgba_text = {0.9,0.9,0.9,1}
-    self.rgba = {0.1,0.1,0.1,0.8}
+    self.rgba = {0.1,0.1,0.1,1}
 
-    self.rgba_hover = {0.15,0.15,0.15,0.9}
+    self.rgba_hover = {0.15,0.15,0.15,1}
     self.rgba_text_hover = nil
 
 

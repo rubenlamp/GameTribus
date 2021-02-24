@@ -24,7 +24,7 @@ function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
 	
 	local quad_scroll = love.graphics.newQuad(0,0, scroll_bg:getWidth(), scroll_bg:getHeight(), scroll_bg:getWidth(), scroll_bg:getHeight())
 	
-    local self = BoxTextDLP(text,prc_x*current_w,prc_y*h,box_with)
+    local self = BoxTextDLP(text,prc_x*current_w+box_with*0.05,prc_y*h,box_with*0.9)
 	--print('created')
     self.setAling('center')
 	self.setMode('normal','static')
