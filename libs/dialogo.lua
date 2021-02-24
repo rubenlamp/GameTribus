@@ -116,6 +116,29 @@ function DialogBox(char_name, says, box_with, px,py, stx, sty, endx, endy )
         ayo.new(rect,1,{x=prc_x,y=prc_y,w=(box_with/current_w),h=1}).setEasing('inQuint').chain(0.5,{offset_bottom=1}).setEasing('outExpo').onEnd(self.startAllText)
     end
     
+    function self.changeText(new_text)
+        self.callOutro()
+        local dummy = {}
+        dummy.x = 0
+        ayo.new(dummy,0.5,{x=1}).onEnd(
+            function()
+                self.resetText(new_text)
+            end
+        )
+    end
+    
+    function self.moveAndRewrite(new_text,position)
+        self.callOutro()
+        local dummy = {}
+        dummy.x = 0
+        ayo.new(dummy,0.5,{x=1}).onEnd(
+            function()
+                self.resetText(new_text)
+                self.showAll()
+            end
+        )
+    end
+    
     function self.isPointInside(px,py)
         local area = {}
         local w, h = getGUICanvasSize()

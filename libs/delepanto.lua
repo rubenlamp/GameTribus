@@ -877,6 +877,7 @@ function BaseContainerDLP(user_string,x,y,size_w)
     function self.baseResetText(new_user_string,wordBreakFunction)
         self.next_element = 1
         self.is_over = false
+        called_char_outro = false
         user_string = new_user_string or user_string
         wordBreakFunction = wordBreakFunction or wordBreakBox
         local list_elements, word_list, break_list, space_size, height_size = wordBreakFunction(size_w,user_string)

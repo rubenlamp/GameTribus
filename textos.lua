@@ -14,10 +14,10 @@ DIAL['EN'] = {
     gui_opt_atk = 'Atacar',
     gui_opt_dial = 'Dialogar',
     gui_opt_ret = 'Déjame Pensarlo',
-    gui_dial_is_susses = '¡Toma Notas Churchill!\n~ EXITO ~',
-    gui_dial_is_fail = 'Esas clases de retorica te estafaron.\n~ FRACASO ~ ',
-    gui_dial_inst = 'Mueve los números al interior para completar el cuadrado magico',
-    gui_dial_sum = 'Cada lado debe sumar ',
+    gui_dial_is_susses = 'The king won, not by force{br}but by wit.',
+    gui_dial_is_fail = 'The words of the king comed short, and failed.',
+    gui_dial_inst = 'Take the black rectangles, and place they to fullfit the magic square',
+    gui_dial_sum = 'Each side should sum',
     gui_battle_gonna = 'The battle is about to start',
     gui_atk_inst =
 [[Keept the green circle inside the gray rectanlge.

@@ -226,6 +226,7 @@ function testMagicBit(mc,n)
 end
 
 function BotonDrawAndDrop(text,x,y,w,h)
+    local original_text = text
     local self = Boton(text,x,y,w,h)
     
     self.original_pos_x = x
@@ -237,6 +238,11 @@ function BotonDrawAndDrop(text,x,y,w,h)
         flux.to(self.pos,0.25,{x=self.original_pos_x,y=self.original_pos_y}):ease("expoout")
     end
     
+    
+    function self.setNormalText()
+        self.text = original_text
+    end
+
     self.rgba_text = {1,1,1,1}
     self.rgba = {0,0,0,1}
     
@@ -297,8 +303,7 @@ function Cuadricula(x,y,cw,ch,magico,suma)
                     lista_huecos[index] = 0
                 end
             end
-        end
-    end
+        end end
     
     function self.putValueOnPlace(px,py,value, button_index)
         local x = math.floor((px-rx)/cw)
@@ -489,7 +494,7 @@ function MuestraTiempo(tiempo)
     local self = {}
     
     self.x = (1920/2)- 400
-    self.y = 1080*0.17
+    self.y = 1080*0.27
     
     self.w = 800
     self.h = 30
@@ -528,7 +533,7 @@ function Main()
     local go_back_button = nil
     local cuadrado = nil
     
-    local botones_huecos = {}
+    local botones_de_numeros = {}
     local active_hueco = 0
     local last_active_x = 0
     local last_active_y = 0
@@ -539,9 +544,15 @@ function Main()
     
     local STATE = 0 -- No gastarted 
     
+    local kings_list = {}
+    local rey_img = nil
+
     local tribu_id = 0
     local suma = 0
     
+    local start_dialog = nil
+    local info_dialog = nil
+
     local function goToHub()
         MSC_DIPLOMACIA:stop()
         TRIBUS[tribu_id] =3 --ganamos
@@ -555,16 +566,28 @@ function Main()
     
     local function irAIniciarElJuego()
         print('iniciar_juego')
-        flux.to(self,0.5,{size=0}):ease("expoout"):oncomplete(mtiempo.start)
+        flux.to(self,1.5,{size=0}):ease("expoout"):oncomplete(mtiempo.start)
         STATE = 1
+        
+        start_dialog.moveAndRewrite(DIAL[LANG].gui_dial_sum..
+                '{br}'..tostring(suma),position)
+
+        local i = 1
+        while huecos[i] do
+            botones_de_numeros[i].setNormalText()
+            i=i+1
+        end
     end
 
     function self.load(settings)
         tribu_id = settings[1]
         
+        kings_list = KINGS_IMG_LIST
+        rey_img = KING_IMG        
+        
         background = MINIGAME_BG_IMA
         
-        newbutton = Boton('',1920/2,1080*0.92,
+        newbutton = Boton('',1920/2,1080*0.75,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                     love.graphics.newImage("/rcs/gui/start.png"),
                     love.graphics.newImage("/rcs/gui/hover_start.png"))
@@ -580,17 +603,24 @@ function Main()
         
         local size_cube = 100
         suma = sum
-        cuadrado = Cuadricula(1920/2,1080*0.4,size_cube,size_cube, magico, sum)
+        cuadrado = Cuadricula(1920/2,1080*0.5,size_cube,size_cube, magico, sum)
         
         local i = 1
         local spacing = 40
-        local x = 1920/2 - (size_cube+spacing)*(#huecos/2.0) + size_cube*0.25
+        local x = 1920/2 - (size_cube+spacing)*(#huecos/2.0) + size_cube*0.1
         while huecos[i] do
-            botones_huecos[i] = BotonDrawAndDrop(tostring(huecos[i]),x,1080*0.75,size_cube,size_cube)
+            botones_de_numeros[i] = BotonDrawAndDrop(tostring(huecos[i]),x,1080*0.85,size_cube,size_cube)
             x = x+(spacing+size_cube+size_cube*0.3)
             i=i+1
         end
         
+        start_dialog = DialogBox(nil,
+                DIAL[LANG].gui_dial_inst..'{br}{br}'..DIAL[LANG].gui_dial_sum..
+                '{br}'..tostring(suma),550,0.5,0.06)
+
+
+        start_dialog.start()
+
         mtiempo = MuestraTiempo(25) -- 45 segundos
         MSC_DIPLOMACIA:play()
     end
@@ -604,79 +634,96 @@ function Main()
         local x, y = getMouseOnCanvas()
         globalX, globalY = love.graphics.inverseTransformPoint(x,y)
         
-            love.graphics.setShader(GAUSIAN_BLURS)
-            love.graphics.setColor(1,1,1)
+        love.graphics.setColor(1,1,1)
+        
+        love.graphics.draw(background)
+        
+        mtiempo.draw()
             
-            love.graphics.draw(background)
-            
-            mtiempo.draw()
-            
-            love.graphics.setColor(1,1,1)
-            
-            love.graphics.setFont(FONT_SCROLL_SMALL )
-            
-            love.graphics.printf(tostring(suma),0,120,1920,'center')
-            love.graphics.setFont(FONT)
-            
-            cuadrado.setMousePos(globalX, globalY)
-            cuadrado.draw()
-            
-            local i = 1
-            while huecos[i] do
-                botones_huecos[i].setPointerPos(globalX, globalY)
-                if STATE > 1 then
-                    if botones_huecos[i].pos.y ~= botones_huecos[i].original_pos_y then
-                        botones_huecos[i].draw()
-                    end
-                else
-                    botones_huecos[i].draw()
+        love.graphics.setColor(1,1,1,0.8)
+        
+        love.graphics.draw(kings_list[tribu_id],
+            1920*0.86-(kings_list[tribu_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
+        
+        love.graphics.draw(rey_img,rey_img:getWidth()*0.75,0,0,-0.75,0.75)
+        
+        love.graphics.setColor(1,1,1)
+        
+        cuadrado.setMousePos(globalX, globalY)
+        
+        love.graphics.setFont(FONT_SCROLL_SMALL)
+        
+        cuadrado.draw()
+        
+        local i = 1
+        while huecos[i] do
+            if STATE > 1 then
+                if botones_de_numeros[i].pos.y ~= botones_de_numeros[i].original_pos_y then
+                    botones_de_numeros[i].draw()
                 end
-                i=i+1
+            else
+                botones_de_numeros[i].draw()
             end
+            i=i+1
+        end
+        love.graphics.setFont(FONT)
+        
+        start_dialog.draw()
+        
+        if STATE == 0 then
+            --love.graphics.setShader(GAUSIAN_BLURS)
+            --cuadrado.drawStandBy()
+            --love.graphics.setShader() 
             
-            love.graphics.setShader()
-            
-            love.graphics.setFont(FONT_SCROLL_SMALL )
-            love.graphics.printf(DIAL[LANG].gui_dial_inst,0,0,1920,'center')
-            love.graphics.printf(DIAL[LANG].gui_dial_sum,0,60,1920,'center')
-            love.graphics.setFont(FONT)
-            
-            if STATE == 0 then
-                --love.graphics.setShader(GAUSIAN_BLURS)
-                --cuadrado.drawStandBy()
-                --love.graphics.setShader()
+            if start_dialog.is_over then
                 newbutton.setPointerPos(globalX, globalY)
                 newbutton.draw()
             end
-            
-            love.graphics.setColor(0,0,0)
-            if STATE == 3 then
-                love.graphics.printf(DIAL[LANG].gui_dial_is_fail,0,1080*0.65,1920,'center')
-                go_back_button.setPointerPos(globalX, globalY)
-                go_back_button.draw()
+        else
+            -- actualizar la logica de los botones con los numeros
+            local i = 1
+            while huecos[i] do
+                botones_de_numeros[i].setPointerPos(globalX, globalY)
+                i=i+1
             end
-            if STATE == 4 then
-                love.graphics.printf(DIAL[LANG].gui_dial_is_susses,0,1080*0.65,1920,'center')
-                go_back_button.setPointerPos(globalX, globalY)
-                go_back_button.draw()
-            end
-            
+        end
+         
+        love.graphics.setColor(0,0,0)
+        if STATE == 3 then
+            --love.graphics.printf(DIAL[LANG].gui_dial_is_fail,0,1080*0.65,1920,'center')
+            go_back_button.setPointerPos(globalX, globalY)
+            go_back_button.draw()
+        end
+        if STATE == 4 then
+            --love.graphics.printf(DIAL[LANG].gui_dial_is_susses,0,1080*0.65,1920,'center')
+            go_back_button.setPointerPos(globalX, globalY)
+            go_back_button.draw()
+        end
+
+          
+
         love.graphics.pop()
     end
     
     function self.update(dt)
+        start_dialog.update(dt) 
+        --info_dialog.update(dt)
         if self.size > 0 then
-            GAUSIAN_BLURS:send("Size", math.floor(self.size) )
+            --GAUSIAN_BLURS:send("Size", math.floor(self.size) )
         end
         if cuadrado.isCompletado() and STATE == 1 then
             mtiempo.stop()
             STATE = 4
+            start_dialog = DialogBox(nil,DIAL[LANG].gui_dial_is_susses,550,0.5,0.08,0.5,0.06 )
+            start_dialog.start()
         end
         if mtiempo.sub_w <= 3 and STATE == 1 then
             STATE = 3
             flux.to(self,2,{size=8}):ease("expoin")
             MSC_DIPLOMACIA:stop()
             MSC_DERROTA:play()
+            start_dialog = DialogBox(nil,DIAL[LANG].gui_dial_is_fail,550,0.5,0.08,0.5,0.06 )
+            start_dialog.start()
         end
         
     end
@@ -695,10 +742,10 @@ function Main()
         if STATE == 1 then
             cuadrado.clearPlace()
             local i = 1
-            while botones_huecos[i] do
-                if botones_huecos[i].isPointerInside() then
-                    last_active_x = botones_huecos[i].pos.x
-                    last_active_y = botones_huecos[i].pos.y
+            while botones_de_numeros[i] do
+                if botones_de_numeros[i].isPointerInside() then
+                    last_active_x = botones_de_numeros[i].pos.x
+                    last_active_y = botones_de_numeros[i].pos.y
                     active_hueco = i
                     break
                 end
@@ -725,9 +772,9 @@ function Main()
     end
     
     function self.mousemoved(x, y, dx, dy, istouch)
-        if botones_huecos[active_hueco] then
-            botones_huecos[active_hueco].pos.x = globalX
-            botones_huecos[active_hueco].pos.y = globalY
+        if botones_de_numeros[active_hueco] then
+            botones_de_numeros[active_hueco].pos.x = globalX
+            botones_de_numeros[active_hueco].pos.y = globalY
         end
     end
 
@@ -737,30 +784,29 @@ function Main()
             irAIniciarElJuego()
         end
         if STATE == 1 then
-            if botones_huecos[active_hueco] then
+            if botones_de_numeros[active_hueco] then
                 --check the index on the cuadro
-                local nx, ny, last = cuadrado.canPutInPlace(tonumber(botones_huecos[active_hueco].text), active_hueco)
+                local nx, ny, last = cuadrado.canPutInPlace(tonumber(botones_de_numeros[active_hueco].text), active_hueco)
                 --print(nx,ny,last)
                 if nx ~= nil then
-                    --botones_huecos[active_hueco].pos.x = nx
-                    --botones_huecos[active_hueco].pos.y = ny
-                    flux.to(botones_huecos[active_hueco].pos,0.25,{x=nx,y=ny}):ease("expoout")
+                    --botones_de_numeros[active_hueco].pos.x = nx
+                    --botones_de_numeros[active_hueco].pos.y = ny
+                    flux.to(botones_de_numeros[active_hueco].pos,0.25,{x=nx,y=ny}):ease("expoout")
                     -- paso un intercambio dentro del cuadrado
                     if last and last > 0 then -- no hay un numero en en lugar? 
                         --print('try to enter change from ', active_hueco, ' to ', last)
-                        --botones_huecos[last].pos.x = last_active_x 
-                        --botones_huecos[last].pos.y = last_active_y
-                        flux.to(botones_huecos[last].pos,0.25,{x=last_active_x,y=last_active_y}):ease("expoout")
-                        cuadrado.putValueOnPlace(last_active_x,last_active_y,tonumber(botones_huecos[last].text), last)
+                        --botones_de_numeros[last].pos.x = last_active_x 
+                        --botones_de_numeros[last].pos.y = last_active_y
+                        flux.to(botones_de_numeros[last].pos,0.25,{x=last_active_x,y=last_active_y}):ease("expoout")
+                        cuadrado.putValueOnPlace(last_active_x,last_active_y,tonumber(botones_de_numeros[last].text), last)
                     end
                 else
-                    botones_huecos[active_hueco].returnToPos()
+                    botones_de_numeros[active_hueco].returnToPos()
                 end
                 active_hueco = -1
             end
         end
     end
-
     
     return self
 end

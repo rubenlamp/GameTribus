@@ -97,8 +97,7 @@ MSC_DERROTA = nil
 MSC_EXITO = nil
 MSC_TRB_MERCANTE = nil
 MSC_TRB_GUERRERA = nil
-MSC_TRB_PACIFICA = nil
-
+MSC_TRB_PACIFICA = nil 
 GAUSIAN_BLURS = nil
 
 FONT_BIG = nil
@@ -243,9 +242,9 @@ function love.load()
 		return texturecolor*color;
 	}
   ]]
-   --local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
+   local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
    --local init_scene =  love.filesystem.load("scenes/intro.lua")()
-   local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
+   --local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()   
    SCENA_MANAGER.push(init_scene,{1})
 end
 
