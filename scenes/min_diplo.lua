@@ -591,7 +591,7 @@ function Main()
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                     love.graphics.newImage("/rcs/gui/start.png"),
                     love.graphics.newImage("/rcs/gui/hover_start.png"))
-        go_back_button = Boton('',1920*0.5,1080*0.92,
+        go_back_button = Boton('',1920/2,1080*0.75,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                     love.graphics.newImage("/rcs/gui/back.png"),
                     love.graphics.newImage("/rcs/gui/hover_back.png"))
@@ -689,17 +689,12 @@ function Main()
         end
          
         love.graphics.setColor(0,0,0)
-        if STATE == 3 then
-            --love.graphics.printf(DIAL[LANG].gui_dial_is_fail,0,1080*0.65,1920,'center')
-            go_back_button.setPointerPos(globalX, globalY)
-            go_back_button.draw()
+        if STATE == 3 or STATE == 4 then
+            if start_dialog.is_over then
+                go_back_button.setPointerPos(globalX, globalY)
+                go_back_button.draw()
+            end
         end
-        if STATE == 4 then
-            --love.graphics.printf(DIAL[LANG].gui_dial_is_susses,0,1080*0.65,1920,'center')
-            go_back_button.setPointerPos(globalX, globalY)
-            go_back_button.draw()
-        end
-
           
 
         love.graphics.pop()

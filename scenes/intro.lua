@@ -150,7 +150,11 @@ function Main()
 	end
 
     function self.mousepressed(x, y, button)
-
+		if not started_exit then
+			startEndDialog()
+			ayo.new(alphas,1.5,{a=0,b=0}).setEasing('inSine').onEnd(loadNewGame)
+			started_exit = true
+		end
     end
 
     function self.keyreleased( key, scancode )

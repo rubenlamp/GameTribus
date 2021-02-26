@@ -244,7 +244,7 @@ function love.load()
   ]]
    local init_scene =  love.filesystem.load("scenes/main_menu.lua")()
    --local init_scene =  love.filesystem.load("scenes/intro.lua")()
-   --local init_scene =  love.filesystem.load("scenes/min_diplo.lua")()   
+   --local init_scene =  love.filesystem.load("scenes/min_atack.lua")()   
    SCENA_MANAGER.push(init_scene,{1})
 end
 

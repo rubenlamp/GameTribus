@@ -959,6 +959,11 @@ function BaseContainerDLP(user_string,x,y,size_w)
     
         local dt = dt or 1 
         if self.last_y < self.repos.y+(self.line_height*0.5) then
+            -- if by some reason the distance is way to big, then short it
+            local diff_y = (self.repos.y+(self.line_height*0.5) - self.last_y)
+            if diff_y > self.line_height*1.5 then
+                self.last_y =  self.last_y+self.line_height*math.ceil(diff_y/self.line_height)
+            end
             self.last_y = self.last_y+self.line_height*dt*5
             self.last_y = math.min(self.repos.y+(self.line_height*0.5),self.last_y)
         end

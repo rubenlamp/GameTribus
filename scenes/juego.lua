@@ -22,7 +22,6 @@ function Main()
 
     local tip_text = nil
 
-    local tale_box = nil
     local scroll_ima = nil
     
     local rey_img = nil
@@ -63,9 +62,6 @@ function Main()
         boton_go_back = Boton('', 1920*1.5,1080*0.82,0,0,
             back_img,back_img_hover)
 
-        boton_go_back_end = Boton('', 1920*0.5,1080*0.94,0,0,
-            back_img,back_img_hover)
-
         MSC_MAP_MENU:play()
         
         
@@ -89,23 +85,23 @@ function Main()
                 tell = DIAL[LANG].gui_victoria_final
                 back_ground = love.graphics.newImage("/rcs/scenes/rey_victoria.png")
                 --tale box esta un poco más abajo
-                tale_box =  BoxTextDLP(tell, 1920/2-400, 1080*0.7, 800)
+				start_dialog = DialogBox(nil,tell,550,0.5,0.6)
+				boton_go_back_end = Boton('', 1920*0.5,1080*0.92,0,0,
+					back_img,back_img_hover)
             else
                 state = 5 -- derrota
                 MSC_DERROTA:play()
                 tell = DIAL[LANG].gui_derrota_final
                 back_ground = love.graphics.newImage("/rcs/scenes/rey_derrota.png")
-                tale_box =  BoxTextDLP(tell, 1920/2-400, 1080*0.1, 800)
+				start_dialog = DialogBox(nil,tell,550,0.5,0.08)
+				boton_go_back_end = Boton('', 1920*0.5,1080*0.35,0,
+					back_img,back_img_hover)
             end
-            scroll_ima = love.graphics.newImage("/rcs/img/Scroll.png")
-            
-            tale_box.setAling('center')
-            tale_box.start()
         else
+			start_dialog = DialogBox(nil,DIAL[LANG].gui_choose_status[neutral_id],550,0.8,0.08)
             back_ground = love.graphics.newImage("/rcs/img/aldea_mapa.png")
         end
-        
-        start_dialog = DialogBox(nil,DIAL[LANG].gui_choose_status[neutral_id],550,0.8,0.08)
+                
         start_dialog.start()
         
         ayo.new(alphas,1,{a=1}).setEasing('inQuint')
@@ -183,7 +179,7 @@ function Main()
                     1920*1.86-(kings_list[working_id]:getWidth()/2)*0.85,0,0,0.85,0.85  )
             end
             
-            start_dialog.draw()
+            
             if king_dialog then
                 king_dialog.draw()
             end
@@ -210,12 +206,14 @@ function Main()
 
         if state >= 4 then
             love.graphics.setColor(1,1,1,1)
-            tale_box.draw()
-            
-            boton_go_back_end.setPointerPos(globalX, globalY)
-            boton_go_back_end.draw()
+			if start_dialog.is_over then
+				boton_go_back_end.setPointerPos(globalX, globalY)
+				boton_go_back_end.draw()
+			end
         end
-    
+		
+		start_dialog.draw()
+		
         love.graphics.pop()
     end
 
@@ -250,9 +248,6 @@ function Main()
                     time_out_move = false
                 end
             end
-        end
-        if state >= 4 then
-            tale_box.update(dt)
         end
     end
     

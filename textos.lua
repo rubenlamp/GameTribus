@@ -20,13 +20,13 @@ DIAL['EN'] = {
     gui_dial_sum = 'Each side should sum',
     gui_battle_gonna = 'The battle is about to start',
     gui_atk_inst =
-[[Keept the green circle inside the gray rectanlge.
-To move the gray rectangle forward just click repeatly.
+[[Keept the green circle inside the gray rectanlge.{br}
+To move the gray rectangle forward just click repeatly.{br}
 To move it back, just stop clicking and wait]],
-    gui_atk_is_susses = 'No somos machos, ¡Pero sí somos muchos!\n~ EXITO ~',
-    gui_atk_is_fail = 'Nunca ataques con el estómago vacio\n~ FRACASO ~ ',
-    gui_victoria_final = 'Y el rey se regocijó al poder finalmente encontrar su mantita',
-    gui_derrota_final = 'Al final el rey perdió todo lo que tenía',
+    gui_atk_is_susses = 'The battle was way to hard, but it was won.',
+    gui_atk_is_fail = 'At dusk of the next day, the battle{br}was lost.',
+    gui_victoria_final = 'The king was joyful at finally found their little blanket',
+    gui_derrota_final = 'In the end, the king lost it all.',
     
     tale_intro = {
         "Kukao{br}The merchant",

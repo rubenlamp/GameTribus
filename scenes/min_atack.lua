@@ -183,7 +183,7 @@ local function Target(x,y,w,h, min, max)
         if state_battle == -1 then
             love.graphics.setColor(1,1,1)
             love.graphics.setFont(FONT_SCROLL_SMALL )
-            love.graphics.printf(DIAL[LANG].gui_battle_gonna,0,self.y-100,1920,'center')
+            --love.graphics.printf(DIAL[LANG].gui_battle_gonna,0,self.y-100,1920,'center')
             love.graphics.setFont(FONT)
         end
         
@@ -262,6 +262,8 @@ function Main()
     local kings_list = {}
     local rey_img = nil
     
+    local start_dialog = nil
+    
     local function goToHub()
         MSC_ATACK:stop()
         TRIBUS[tribu_id] = 1 --ganamos
@@ -276,6 +278,7 @@ function Main()
     local function irAIniciarElJuego()
         flux.to(self,0.5,{size=0}):ease("expoout"):oncomplete(target.start)
         control.contador.iniciar()
+        start_dialog.showAll()
         STATE = 1
     end
 
@@ -285,11 +288,11 @@ function Main()
         kings_list = KINGS_IMG_LIST
         rey_img = KING_IMG        
         
-        newbutton = Boton('',1920/2,1080*0.92,
+        newbutton = Boton('',1920/2,1080*0.75,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                     love.graphics.newImage("/rcs/gui/start.png"),
                     love.graphics.newImage("/rcs/gui/hover_start.png"))
-        go_back_button = Boton('',1920*0.5,1080*0.92,
+        go_back_button = Boton('',1920/2,1080*0.43,
                     love.graphics.getWidth()*0.35,love.graphics.getHeight()*0.25,
                     love.graphics.newImage("/rcs/gui/back.png"),
                     love.graphics.newImage("/rcs/gui/hover_back.png"))
@@ -297,11 +300,17 @@ function Main()
         background = MINIGAME_BG_IMA
         
         -- pon lo a la mitad horizonta, a 40% vertical, 40x20 px, rango de 25% a 75% horizontal
-        target = Target(1920/2,1080*0.4,40,20,1920*0.25,1920*0.75)
-        control = Control(1920/2,1080*0.4,1920*0.5+40,48)
+        target = Target(1920/2,1080*0.6,40,20,1920*0.25,1920*0.75)
+        control = Control(1920/2,1080*0.6,1920*0.5+40,48)
+        
         estado_batalla = AvanceBatalla(500)
+        
         MSC_ATACK:play()
-    end
+        
+        start_dialog = DialogBox(nil,DIAL[LANG].gui_atk_inst,700,0.5,0.06)
+        start_dialog.start()
+        
+        end
     
     function self.draw()
        
@@ -327,38 +336,30 @@ function Main()
         target.draw()
         
         love.graphics.setColor(1,1,1)
-        love.graphics.setFont(FONT_SCROLL_SMALL)
-        love.graphics.printf(DIAL[LANG].gui_atk_inst,0,0,1920,'center')
-        love.graphics.setFont(FONT )
+        
+        estado_batalla.draw()
         
         if STATE == 0 then
             newbutton.setPointerPos(globalX, globalY)
             newbutton.draw()
         end
-        
-        if STATE == 1 then
-            estado_batalla.draw()
-        end
+                
+        start_dialog.draw()
         
         love.graphics.setColor(0,0,0)
-        if STATE == 3 then
-            love.graphics.printf(DIAL[LANG].gui_atk_is_fail,0,1080*0.65,1920,'center')
-            go_back_button.setPointerPos(globalX, globalY)
-            go_back_button.draw()
-        end
-        if STATE == 4 then
-            love.graphics.printf(DIAL[LANG].gui_atk_is_susses,0,1080*0.65,1920,'center')
-            go_back_button.setPointerPos(globalX, globalY)
-            go_back_button.draw()
+        if STATE == 3 or STATE == 4 then
+            if start_dialog.is_over then
+                go_back_button.setPointerPos(globalX, globalY)
+                go_back_button.draw()
+            end
         end
             
         love.graphics.pop()
     end
     
     function self.update(dt)
-        if self.size > 0 then
-            GAUSIAN_BLURS:send("Size", math.floor(self.size) )
-        end
+        start_dialog.update(dt)
+        
         if STATE == 1 then
             control.update(dt)
             
@@ -373,12 +374,16 @@ function Main()
         if estado_batalla.esVictorioso() and STATE == 1 then
             target.detenerMovimientos()
             STATE = 4
+            start_dialog = DialogBox(nil,DIAL[LANG].gui_atk_is_susses,550,0.5,0.08,0.5,0.06 )
+            start_dialog.start()
         end
         if estado_batalla.esDerrotado() and STATE == 1 then
             target.detenerMovimientos()
             MSC_ATACK:stop()
             MSC_DERROTA:play()
             STATE = 3
+            start_dialog = DialogBox(nil,DIAL[LANG].gui_atk_is_fail,550,0.5,0.08,0.5,0.06 )
+            start_dialog.start()
         end
         --]]
     end
