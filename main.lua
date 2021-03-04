@@ -109,6 +109,9 @@ SCROLL_TOP_IMA = nil
 SCROLL_BG_IMA = nil
 KINGS_IMG_LIST = {}
 KING_IMG = nil
+
+VIDEO_CREDITS = nil
+
 --- Black ink on paper!!!
 function BlackBehaviour(char_dpl,font)
     --set the start values
@@ -215,6 +218,8 @@ function love.load()
     KINGS_IMG_LIST[2] = love.graphics.newImage("/rcs/img/rey_triangulo.png")
     KING_IMG = love.graphics.newImage("/rcs/img/rey_jugador.png")
 
+	VIDEO_CREDITS = love.graphics.newVideo("/rcs/video/making_of.ogg")
+	
 	
 	GAUSIAN_BLURS = love.graphics.newShader[[
 	// This is a reimplementation of some code I found in shadertoy   
@@ -300,7 +305,7 @@ function love.draw()
     local x = (SIZE_WIN_W/2)-((base_win_size_w/2)*factor)
     local y = (SIZE_WIN_H/2)-((base_win_size_h/2)*factor)
     love.graphics.draw(CANVAS,x,y,0,factor,factor)
-    
+	
     --GUI is draw on top of everything
     --love.graphics.setColor(1,1,1,1)
     --love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)

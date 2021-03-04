@@ -22,14 +22,24 @@ function Main()
 
     local tale_box = nil
     
+    -- esto controla el nivel del alpha de el pergamino, y los botones
     local alphas = {}
     alphas.a = 0
     alphas.b = 0
     alphas.c = 0
     
-    local easing = nil
+    local vid_scale_pos = {}
+    vid_scale_pos.x = 0.5
+    vid_scale_pos.y = 0.38
+    vid_scale_pos.sx = 1
+    vid_scale_pos.sy = 1
     
+    local easing = nil
     local is_text_end = false
+    
+  	local credits_move_vid = false
+	local credits_show_thanks = false
+    local moving_vid_easing = nil
 
     function loadCentralHub()
         --local sim_scene =  love.filesystem.load("scenes/central_hub.lua")()
@@ -44,13 +54,32 @@ function Main()
         if not limpiar_fondo then
             flux.to(self,0.5,{size=0}):ease("quadout"):oncomplete(changeState)
             ayo.new(alphas,0.5,{c=1}).setEasing('inBack')
+            if tale_box then
+                tale_box.callOutro()
+                tale_box = nil
+            end
+            
+            if moving_vid_easing then
+                moving_vid_easing.cancel()
+            end
+            -- fijar valores iniciales de la posición del video :p
+            vid_scale_pos.x = 0.5
+            vid_scale_pos.y = 0.38
+            vid_scale_pos.sx = 1
+            vid_scale_pos.sy = 1
+            
+            credits_move_vid = false
+            credits_show_thanks = false
             limpiar_fondo = true
         end
     end
 
     function ensuciaFondo()
         limpiar_fondo = false
+        -- en este punto tale_box es un objeto de tipo DialogBox
         tale_box.start()
+        tale_box.show_scroll = false
+        VIDEO_CREDITS:play()
     end
 
     function loadNewGame()
@@ -139,14 +168,20 @@ function Main()
 
         love.graphics.setColor(1,1,1,alphas.b)
         love.graphics.draw(scroll_ima,
-            1920/2-(scroll_ima:getWidth()/2)*1.2,
-            1080/2-(scroll_ima:getHeight()/2),0,1.2,1)
+            1920*0.5 - (scroll_ima:getWidth()/2)*1.2,
+            1080*0.5 - (scroll_ima:getHeight()/2),0,1.2,1)
 
         if STATE == 2  then
             love.graphics.setColor(0,0,0,alphas.b)
             love.graphics.setFont(FONT_SCROLL)
             love.graphics.printf(DIAL[LANG].gui_team_name,0,1080*0.2,1920,'center')
             love.graphics.setFont(FONT)
+            love.graphics.setColor(1,1,1,alphas.b)
+            love.graphics.draw(VIDEO_CREDITS,
+                1920 * vid_scale_pos.x - (VIDEO_CREDITS:getWidth()/2)* vid_scale_pos.sx,
+                1080 * vid_scale_pos.y - (VIDEO_CREDITS:getHeight()/2)* vid_scale_pos.sy,
+                0,
+                vid_scale_pos.sx,vid_scale_pos.sy)
         end
         
         if tale_box then
@@ -165,12 +200,27 @@ function Main()
             tale_box.update(dt)
         end
         
+        if STATE == 2 then
+            if VIDEO_CREDITS:tell() >= 39 and not credits_move_vid then
+                --
+                moving_vid_easing = ayo.new(vid_scale_pos,2,{x=0.5, y=0.5, sx = 1.5, sy = 1.5})
+                credits_move_vid = true
+            end
+            if VIDEO_CREDITS:tell() >= 52 and not credits_show_thanks and tale_box then
+                -- thanks for playing!!!
+                tale_box = DialogBox(nil,DIAL[LANG].gui_thanks,1000,0.5,0.67)
+                tale_box.start()
+                tale_box.show_scroll = false
+                credits_show_thanks = true
+            end
+        end
+        
         if STATE == 0 or STATE == 2 then
             if not is_text_end and tale_box.isEnded() then
                is_text_end = true
                --flux.to(self,3,{dummy= 0}):oncomplete(limpiaFondo)
                 print('The table is ended...')
-                ayo.new(alphas,1.25,{b=0, c=1}).delay(1.2).setEasing('outBack').onStart(tale_box.callOutro).onEnd(limpiaFondo)
+                easing = ayo.new(alphas,1.25,{b=0, c=1}).delay(1.2).setEasing('outBack').onStart(tale_box.callOutro).onEnd(limpiaFondo)
             end
         end
     end
@@ -187,11 +237,12 @@ function Main()
             end
             if creditos.isPointerInside() then
                 STATE = 2
-                tale_box =  BoxTextDLP(DIAL[LANG].gui_creditos_full,1920/2-400,
-                1080*0.3,800)
-                tale_box.setAling('center')
-                tale_box.setMode('normal','static')
-                ayo.new(alphas,0.5,{c=0}).setEasing('outBack').chain(0.5,{b=1}).setEasing('inSine') 
+                tale_box =  DialogBox(nil,DIAL[LANG].gui_creditos_full,1000,0.5,0.49)
+                tale_box.show_scroll = false
+                easing.cancel()
+                limpiaFondo()
+                VIDEO_CREDITS:rewind()
+                easing = ayo.new(alphas,0.5,{c=0}).setEasing('outBack').chain(0.5,{b=1}).setEasing('inSine') 
                 flux.to(self,1,{size=8}):oncomplete(ensuciaFondo)
             end
             if salir.isPointerInside() then
@@ -200,8 +251,12 @@ function Main()
             end
         end
         if STATE == 0  or STATE == 2 and not limpiar_fondo then
-            tale_box.callOutro()
-            easing.cancel()
+            if tale_box then
+                tale_box.callOutro()
+            end
+            if STATE == 0 then
+                easing.cancel()
+            end
             ayo.new(alphas,0.5,{b=0}).onEnd(limpiaFondo)
         end
         --[[

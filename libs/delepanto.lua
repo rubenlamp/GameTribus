@@ -810,8 +810,6 @@ function BaseContainerDLP(user_string,x,y,size_w)
             local nx = self.list_elements[self.next_element].getWidth() or 0
             self.repos.x = self.repos.x + nx
             
-            local max_repox = 0
-            
             self.list_elements[self.next_element].awake()
             self.next_element = self.next_element+1
             --aling center
@@ -898,6 +896,9 @@ function BaseContainerDLP(user_string,x,y,size_w)
         self.word_count = 1
         self.cbreak_index = 1
         self.index_of_break = 1
+        
+        self.repos.x = 0
+        max_repos_x = 0
 
     end
     
@@ -990,8 +991,11 @@ function BaseContainerDLP(user_string,x,y,size_w)
     end
     
     function self.draw()
+        
         --love.graphics.setColor(1,0,1)
         --love.graphics.rectangle('line',self.pos.x,self.pos.y,self.repos.x,self.repos.y)
+        --love.graphics.setColor(1,1,1)
+        
         i = 1
         while i < self.next_element do
             self.list_elements[i].draw()

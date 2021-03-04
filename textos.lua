@@ -3,11 +3,18 @@ DIAL = {}
 DIAL['EN'] = {
     --// definimos nombres de as cosas...
     game_name = 'B E F O R E ~ L O S I N G',
-    gui_once_was_a_king = 'Once upon a time, there was a rather distracted and clumsy king, who lost something very important to him{br}and was willing to do anything to get it back.',
+    gui_once_was_a_king = 'Once upon a time...{br}There was a rather distracted and clumsy king, who lost something very important to him{br}and was willing to do anything to get it back.',
     gui_new_game = 'Juego Nuevo',
     gui_creditos = 'Créditos',
     gui_team_name = 'TEAM LOS THINKING',
-    gui_creditos_full = 'Mildred Ham{br}Eduardo Fierro{br}Ruben Azael Martínez Lozada{br}Pablo Rodríguez{br}Cristian Valerio{br}Paulina Marín{br}Osvaldo Barajas Fierros',
+    gui_creditos_full = {
+        'Project Manager{br}{br}Paulina Marín',
+        'Game Design and Copy{br}{br}Pablo Rodríguez',
+        'Illustration And Character Design{br}{br}Ruben Azael Martínez Lozada{br}Cristian Valerio',
+        'Music{br}{br}Eduardo Fierro',
+        'GUI Graphic Design{br}{br}Mildred Ham',
+        'Programming{br}{br}Osvaldo Barajas Fierros'},
+    gui_thanks = 'Thanks For Playing!',
     gui_exit = 'Salir',
     gui_ready = '¿Estas listo?',
     gui_return = 'Regresar',
